@@ -1,0 +1,7 @@
+{
+  "name": "Calendar-Challenge",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
