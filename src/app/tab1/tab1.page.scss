@@ -1,0 +1,160 @@
+.centered-label {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  font-weight: 700;
+  transform: translateX(-50%);
+  font-size: 19px; /* Ajuste la taille du texte selon tes préférences */
+  color: var(--text-color); /* Utilise une variable pour la couleur du texte */
+}
+
+.transparent-toolbar {
+  --background: transparent;
+  --ion-background-color: transparent;
+  --ion-background-color-rgb: 255, 255, 255, 0; /* This ensures no background color */
+  box-shadow: none; /* Removes any shadow */
+}
+
+.color-red {
+  color: var(--ion-color-danger, red); /* Couleur rouge pour toutes les icônes d'alerte */
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; // Aligner les éléments aux extrémités
+  width: 100%;
+}
+
+.left-button {
+  --padding: 0;
+}
+
+.right-button {
+  --padding: 0;
+}
+
+ion-icon {
+  font-size: 25px; // Taille de l'icône
+}
+
+.white-alert::part(header) {
+  background-color: white; /* Fond de l'en-tête */
+  color: black; /* Texte de l'en-tête */
+}
+
+.white-alert::part(message) {
+  color: black; /* Texte du message */
+}
+
+.white-alert::part(button) {
+  color: black; /* Texte des boutons */
+}
+
+.white-alert::part(background) {
+  background: white; /* Fond de l'alerte */
+}
+
+/* Styles spécifiques pour les boutons */
+.cancel-button {
+  color: gray !important; /* Texte du bouton Annuler */
+}
+
+.logout-button {
+  color: red !important; /* Texte du bouton Déconnexion */
+}
+
+.container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.day-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.nav-button {
+  background-color: #e1f0ff;
+  color: #2196f3;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #b3d8ff;
+}
+
+.nav-button ion-icon {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+.day-info {
+  flex: 1;
+  text-align: center;
+  margin: 0 16px;
+}
+
+.current-day {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.progress {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.challenges-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.challenge-item {
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.challenge-content {
+  flex: 1;
+}
+
+.challenge-description {
+  margin: 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.completion-date {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.challenge-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #2196f3;
+  cursor: pointer;
+}
+
+.challenge-checkbox:focus {
+  outline: 2px solid #90caf9;
+  outline-offset: 2px;
+}

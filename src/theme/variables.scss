@@ -1,2 +1,16 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+:root {
+    /* Désactiver le mode sombre */
+    --ion-background-color: #ffffff;
+    --ion-text-color: #000000;
+}
+
+ion-tab-bar {
+    --ion-background-color: #ffffff !important;
+    --ion-tab-bar-background: #ffffff !important;
+    --ion-tab-bar-color: #000000 !important;
+    --ion-tab-bar-border-color: #e0e0e0 !important;
+  }
+  
+  

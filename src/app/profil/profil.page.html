@@ -1,0 +1,53 @@
+<ion-header collapse="condense">
+  <ion-toolbar class="transparent-toolbar">
+    <ion-label class="centered-label" style="color: #d570fa;">
+      Profil utilisateur
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Afficher un spinner pendant le chargement -->
+  <!-- Conteneur pour centrer le spinner -->
+  <div class="spinner-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <!-- Afficher les données une fois chargées -->
+  <ng-container *ngIf="!isLoading && employee">
+    <!-- Carré rose avec la photo de profil -->
+    <div class="profile-container">
+      <!-- Photo de profil -->
+      <div class="profile-picture">
+        <img [src]="employee.photoUrl || 'assets/default-profile.png'" alt="Photo de profil" />
+      </div>
+    
+      <!-- Labels alignés en colonne -->
+      <div class="labels-container">
+        <h2 style="font-weight: 600;color: white; font-size: xx-large;" class="ion-text-center">{{ employee.nom }}</h2>
+        <ion-label style="font-size: 16px;color: black;" class="ion-text-center">{{ employee.role }}</ion-label>
+      </div>
+    </div>
+
+    <!-- Carte grise avec les informations de l'employé -->
+    <ion-card class="info-card">
+      <ion-card-content>
+        <h2 style="font-weight: 600;color: #d570fa;">Email</h2>
+        <ion-item class="trans" lines="none">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-label class="ion-text-center">{{ employee.email }}</ion-label>
+        </ion-item>
+        <h2 style="font-weight: 600;color: #d570fa;">Entreprise</h2>
+        <ion-item class="trans" lines="none">
+          <ion-icon name="business-outline"></ion-icon>
+          <ion-label class="ion-text-center">{{ employee.entreprise }}</ion-label>
+        </ion-item>
+        <h2 style="font-weight: 600;color: #d570fa;">Numéro de téléphone</h2>
+        <ion-item class="trans" lines="none">
+          <ion-icon name="call-outline" slot="start"></ion-icon>
+          <ion-label class="ion-text-center">{{ employee.phone }}</ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+</ion-content>

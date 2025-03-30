@@ -1,17 +1,50 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+<ion-header collapse="condense">
+    <ion-toolbar class="transparent-toolbar">
+      <ion-label class="centered-label" style="color: #d570fa;">
+        Astuce et Citation
+      </ion-label>
     </ion-toolbar>
-  </ion-header>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <div class="spinner-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  
+  <div *ngIf="!isLoading">
+    <ion-item lines="none" style="--background: #d570fa; 
+  transform: translate(0px, 10px);
+  border-radius: 25px; 
+  margin: 0 14px;
+  height: 45px;
+  margin-bottom: 40px;">
+    <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
+      Jour {{ currentDay }}
+    </div>
+  </ion-item>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+        <!-- Carte Astuce (anime du haut) -->
+        <div class="animated-card top-card">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Astuce du jour</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{ astuce }}
+            </ion-card-content>
+          </ion-card>
+        </div>
+  
+        <!-- Carte Citation (anime du bas) -->
+        <div class="animated-card bottom-card">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Citation du jour</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{ citation }}
+            </ion-card-content>
+          </ion-card>
+        </div>
+  </div>
+  
 </ion-content>

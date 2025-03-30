@@ -1,17 +1,79 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
+<ion-header collapse="condense">
+  <ion-toolbar class="transparent-toolbar">
+    <ion-buttons slot="start">
+      <ion-button menu="main-menu" (click)="presentLogoutAlert()">
+        <ion-icon slot="icon-only" name="close-circle-outline" class="color-red"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-label class="centered-label" style="color: #d570fa;">Calendar Challenger</ion-label> <!-- Centré -->
+    <ion-buttons  slot="end">
+      <ion-button (click)="goToProfilePage()">
+        <ion-icon style="color: black;" name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+<ion-content class="ion-padding">
+  <!-- Card de salutation -->
+  <ion-card style="background-color: #d8d8d8; height: 23%;margin-bottom: 25px;">
+    <ion-card-content>
+      <!-- Contenu texte à gauche -->
+      <div>
+        <h2 style="font-size: x-large;font-weight: 700;">Bonjour,</h2>
+        <p>Prêt pour reléver</p>
+        <p>tes Challenges!</p>
+      </div>
+      <!-- Image dans un cercle violet à droite -->
+      <div style="transform: translate(170%, -100%);width: 100px; height: 90px;">
+        <img src="/assets/calendar.png" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+    </ion-card-content>
+  </ion-card>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Navigation entre les jours -->
+  <ion-item lines="none" style="--background: #d570fa; 
+  border-radius: 25px; 
+  margin: 0 14px;
+  height: 45px;
+  margin-bottom: 20px;">
+    <ion-button fill="clear" (click)="previousDay()">
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+    <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
+      Jour {{ currentDay }}
+    </div>
+    <ion-button fill="clear" (click)="nextDay()">
+      <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <!-- Défis du jour -->
+  <div style="margin-top: 16px;">
+    <p style="font-weight: 800; font-size: 20px; margin-left: 16px; margin-bottom: 20px;">Challenge du Jour {{ currentDay }}</p>
+    
+    <ion-list style="background: transparent;margin-bottom: 25px;">
+      <div *ngFor="let defis of currentDayChallenges; let i = index" 
+           style="display: flex; align-items: center; margin-bottom: 15px;">
+        <!-- Item avec fond violet et bordures arrondies -->
+        <ion-item 
+          style="--background: #d570fa; 
+                 --border-radius: 12px;
+                 --color: white;
+                 flex: 1;
+                 margin-right: 8px;"
+          lines="none">
+          <ion-label>Challenge {{ i + 1 }} : {{ defis.description }}</ion-label>
+        </ion-item>
+        
+        <!-- Checkbox à droite de l'item -->
+        <ion-checkbox [(ngModel)]="defis.completed" 
+        style="--size: 24px; --background-checked: #d570fa;"></ion-checkbox>
+      </div>
+    </ion-list>
+  
+    <p style="margin: 16px;">
+      Progression : {{ completedChallengesCount }} / {{ currentDayChallenges.length }} défis accomplis.
+    </p>
+  </div>
 </ion-content>
+

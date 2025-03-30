@@ -3,5 +3,6 @@
   "integrations": {
     "capacitor": {}
   },
+  "darkMode": false,
   "type": "angular"
 }

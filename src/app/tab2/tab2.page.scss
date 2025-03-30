@@ -1,0 +1,16 @@
+.centered-label {
+    position: absolute;
+    left: 50%;
+    top: 28%;
+    font-weight: 700;
+    transform: translateX(-50%);
+    font-size: 19px; /* Ajuste la taille du texte selon tes préférences */
+    color: var(--text-color); /* Utilise une variable pour la couleur du texte */
+  }
+  
+  .transparent-toolbar {
+    --background: transparent;
+    --ion-background-color: transparent;
+    --ion-background-color-rgb: 255, 255, 255, 0; /* This ensures no background color */
+    box-shadow: none; /* Removes any shadow */
+  }

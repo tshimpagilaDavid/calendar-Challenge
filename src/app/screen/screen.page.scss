@@ -1,0 +1,49 @@
+/* Cache la barre de défilement tout en permettant le scroll */
+ion-content {
+  --overflow: hidden;
+  overflow-y: auto;
+}
+
+/* Pour les navigateurs WebKit (Chrome, Safari, etc.) */
+ion-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Style pour le conteneur principal */
+.container {
+  background-color: #d570fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Prend toute la hauteur de l'écran */
+  position: relative; /* Permet de positionner le contenu absolu à l'intérieur */
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+  margin-top: 25px;
+  margin-bottom: 35px;
+  border-radius: 50%;
+}
+
+/* Style pour le conteneur du texte et du spinner */
+.loading-container {
+  z-index: 1;
+  position: absolute;
+  bottom: 20%;
+  text-align: center;
+}
+
+/* Style pour le texte "Chargement..." */
+.loading-text {
+  color: white;
+  font-size: 1.125rem; /* Équivalent à text-lg dans Tailwind */
+  margin-bottom: 1rem; /* Équivalent à mb-4 dans Tailwind */
+}
+
+/* Style pour le spinner */
+.spinner {
+  color: white;
+  transform: translate(-5%, 0%); /* Ajuste la position du spinner */
+}

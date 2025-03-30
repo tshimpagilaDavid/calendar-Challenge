@@ -1,0 +1,86 @@
+.centered-label {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  font-weight: 700;
+  transform: translateX(-50%);
+  font-size: 19px; /* Ajuste la taille du texte selon tes préférences */
+  color: var(--text-color); /* Utilise une variable pour la couleur du texte */
+}
+
+.transparent-toolbar {
+  --background: transparent;
+  --ion-background-color: transparent;
+  --ion-background-color-rgb: 255, 255, 255, 0; /* This ensures no background color */
+  box-shadow: none; /* Removes any shadow */
+}
+
+.trans {
+  --background: transparent;
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Prend toute la hauteur de la page */
+}
+
+.custom-header {
+    background-color: #d570fa; /* Couleur de fond en hexadécimal */
+  }
+  
+  .custom-header ion-toolbar {
+    --background: #d570fa; /* Couleur de fond de la toolbar en hexadécimal */
+    --color: white; /* Couleur du texte en blanc */
+  }
+/* Conteneur principal */
+.profile-container {
+  display: flex;
+  flex-direction: column; /* Aligner les éléments en colonne */
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  background-color: #d570fa; /* Rose */
+  width: 190px;
+  height: 190px;
+  margin: 20px auto; /* Espace autour du carré rose */
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-picture {
+  width: 115px;
+  height: 100%;
+  border-radius: 30%;
+  overflow: hidden;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.profile-picture img {
+  width: 100%; /* Remplir la largeur du conteneur */
+  height: 100%; /* Remplir la hauteur du conteneur */
+  object-fit: cover; /* Conserver le ratio d'aspect */
+}
+
+/* Conteneur pour les labels */
+.labels-container {
+  display: flex;
+  flex-direction: column; /* Aligner les labels en colonne */
+  margin-bottom: 15px; /* Espace entre le carré rose et les labels */
+}
+
+/* Style pour la carte d'informations */
+.info-card {
+  background-color: #d1d1d1; /* Gris clair */
+  border-radius: 15px;
+  margin: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour les icônes */
+ion-icon {
+  color: #555;
+}

@@ -23,6 +23,10 @@ const routes: Routes = [
         path: '',
         redirectTo: '/tabs/tab1',
         pathMatch: 'full'
+      },
+      {
+        path: 'profil',
+        loadChildren: () => import('../profil/profil.module').then( m => m.ProfilPageModule)
       }
     ]
   },

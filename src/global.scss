@@ -26,12 +26,37 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /**
- * Ionic Dark Mode
+ * Désactivation du mode sombre
  * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
+ * Supprimez ou commentez les imports liés au mode sombre.
  */
-
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+/* Forcer le thème clair */
+:root {
+  --ion-color-primary: #3880ff; /* Couleur primaire (bleu) */
+  --ion-color-primary-rgb: 56, 128, 255;
+  --ion-color-primary-contrast: #ffffff; /* Texte blanc */
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #3171e0;
+  --ion-color-primary-tint: #4c8dff;
+
+  /* Couleurs du thème clair */
+  --ion-background-color: #ffffff; /* Fond blanc */
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: #000000; /* Texte noir */
+  --ion-text-color-rgb: 0, 0, 0;
+  --ion-border-color: #c8c7cc; /* Couleur de bordure */
+  --ion-toolbar-background: #f8f8f8; /* Fond de la barre d'outils */
+  --ion-toolbar-color: #000000; /* Texte de la barre d'outils */
+}
+
+/* Forcer le thème clair même en mode sombre */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #ffffff !important; /* Fond blanc */
+    --ion-text-color: #000000 !important; /* Texte noir */
+  }
+}
