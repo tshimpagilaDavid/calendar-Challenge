@@ -160,4 +160,39 @@ ion-card-content {
   align-items: center;
   height: 100vh; /* Prend toute la hauteur de la page */
 }
+
+.no-data-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  padding: 20px;
+}
+
+.no-data-card {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: none;
+  background: #d8d8d8;
+  border-radius: 16px;
+}
+
+.no-data-icon {
+  font-size: 64px;
+  color: #d570fa;
+  margin-bottom: 16px;
+}
+
+.no-data-card h3 {
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 8px;
+}
+
+.no-data-card p {
+  color: #6c757d;
+  margin: 8px 0;
+  font-size: 14px;
+}
   

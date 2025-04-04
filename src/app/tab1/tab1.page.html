@@ -5,26 +5,25 @@
         <ion-icon slot="icon-only" name="close-circle-outline" class="color-red"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-label class="centered-label" style="color: #d570fa;">Calendar Challenger</ion-label> <!-- Centré -->
-    <ion-buttons  slot="end">
+    <ion-label class="centered-label" style="color: #d570fa;">Calendar Challenger</ion-label>
+    <ion-buttons slot="end">
       <ion-button (click)="goToProfilePage()">
         <ion-icon style="color: black;" name="person-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 <ion-content class="ion-padding">
   <!-- Card de salutation -->
-  <ion-card style="background-color: #d8d8d8; height: 23%;margin-bottom: 25px;">
+  <ion-card style="background-color: #d8d8d8; height: 23%; margin-bottom: 25px;">
     <ion-card-content>
-      <!-- Contenu texte à gauche -->
       <div>
-        <h2 style="font-size: x-large;font-weight: 700;">Bonjour,</h2>
+        <h2 style="font-size: x-large; font-weight: 700;">Bonjour,</h2>
         <p>Prêt pour reléver</p>
         <p>tes Challenges!</p>
       </div>
-      <!-- Image dans un cercle violet à droite -->
-      <div style="transform: translate(170%, -100%);width: 100px; height: 90px;">
+      <div style="transform: translate(170%, -100%); width: 100px; height: 90px;">
         <img src="/assets/calendar.png" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;">
       </div>
     </ion-card-content>
@@ -51,29 +50,43 @@
   <div style="margin-top: 16px;">
     <p style="font-weight: 800; font-size: 20px; margin-left: 16px; margin-bottom: 20px;">Challenge du Jour {{ currentDay }}</p>
     
-    <ion-list style="background: transparent;margin-bottom: 25px;">
-      <div *ngFor="let defis of currentDayChallenges; let i = index" 
-           style="display: flex; align-items: center; margin-bottom: 15px;">
-        <!-- Item avec fond violet et bordures arrondies -->
-        <ion-item 
-          style="--background: #d570fa; 
-                 --border-radius: 12px;
-                 --color: white;
-                 flex: 1;
-                 margin-right: 8px;"
-          lines="none">
-          <ion-label>Challenge {{ i + 1 }} : {{ defis.description }}</ion-label>
-        </ion-item>
-        
-        <!-- Checkbox à droite de l'item -->
-        <ion-checkbox [(ngModel)]="defis.completed" 
-        style="--size: 24px; --background-checked: #d570fa;"></ion-checkbox>
-      </div>
-    </ion-list>
-  
-    <p style="margin: 16px;">
-      Progression : {{ completedChallengesCount }} / {{ currentDayChallenges.length }} défis accomplis.
-    </p>
+    <!-- Affichage conditionnel -->
+    <div *ngIf="currentDayChallenges.length > 0; else noDataTemplate">
+      <ion-list style="background: transparent; margin-bottom: 25px;">
+        <div *ngFor="let defis of currentDayChallenges; let i = index" 
+             style="display: flex; align-items: center; margin-bottom: 15px;">
+          <ion-item 
+            style="--background: #d570fa; 
+                   --border-radius: 12px;
+                   --color: white;
+                   flex: 1;
+                   margin-right: 8px;"
+            lines="none">
+            <ion-label>Challenge {{ i + 1 }} : {{ defis.description }}</ion-label>
+          </ion-item>
+          <ion-checkbox [(ngModel)]="defis.completed" 
+          style="--size: 24px; --background-checked: #d570fa;"></ion-checkbox>
+        </div>
+      </ion-list>
+    
+      <p style="margin: 16px;">
+        Progression : {{ completedChallengesCount }} / {{ currentDayChallenges.length }} défis accomplis.
+      </p>
+    </div>
+
+    <!-- Template quand aucune donnée n'est disponible -->
+    <ng-template #noDataTemplate>
+      <ion-card style="background-color: #d8d8d8; border-radius: 12px; box-shadow: none; margin: 16px 0;">
+        <ion-card-content style="text-align: center; padding: 20px;">
+          <ion-icon name="calendar-outline" style="font-size: 48px; color: #d570fa; margin-bottom: 16px;"></ion-icon>
+          <h3 style="font-weight: 600; color: #343a40; margin-bottom: 8px;">Aucun Coaching activé</h3>
+          <p style="color: #6c757d; margin: 0;">
+            Vous n'avez actuellement aucun challenge disponible pour ce jour.
+            <br>
+            Contactez votre administrateur pour plus d'informations.
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ng-template>
   </div>
 </ion-content>
-

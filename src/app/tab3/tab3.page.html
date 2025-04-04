@@ -1,50 +1,66 @@
 <ion-header collapse="condense">
-    <ion-toolbar class="transparent-toolbar">
-      <ion-label class="centered-label" style="color: #d570fa;">
-        Astuce et Citation
-      </ion-label>
-    </ion-toolbar>
+  <ion-toolbar class="transparent-toolbar">
+    <ion-label class="centered-label" style="color: #d570fa;">
+      Astuce et Citation
+    </ion-label>
+  </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-  <div class="spinner-container" *ngIf="isLoading">
-    <ion-spinner name="crescent"></ion-spinner>
-  </div>
-  
-  <div *ngIf="!isLoading">
-    <ion-item lines="none" style="--background: #d570fa; 
-  transform: translate(0px, 10px);
-  border-radius: 25px; 
-  margin: 0 14px;
-  height: 45px;
-  margin-bottom: 40px;">
-    <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
-      Jour {{ currentDay }}
-    </div>
-  </ion-item>
+<div class="spinner-container" *ngIf="isLoading">
+  <ion-spinner name="crescent"></ion-spinner>
+</div>
 
-        <!-- Carte Astuce (anime du haut) -->
-        <div class="animated-card top-card">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>Astuce du jour</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              {{ astuce }}
-            </ion-card-content>
-          </ion-card>
-        </div>
-  
-        <!-- Carte Citation (anime du bas) -->
-        <div class="animated-card bottom-card">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>Citation du jour</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              {{ citation }}
-            </ion-card-content>
-          </ion-card>
-        </div>
+<div *ngIf="!isLoading">
+  <!-- Affichage normal quand il y a des données -->
+  <div *ngIf="astuce || citation; else noDataTemplate">
+    <ion-item lines="none" style="--background: #d570fa; 
+    transform: translate(0px, 10px);
+    border-radius: 25px; 
+    margin: 0 14px;
+    height: 45px;
+    margin-bottom: 40px;">
+      <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
+        Jour {{ currentDay }}
+      </div>
+    </ion-item>
+
+    <!-- Carte Astuce (anime du haut) -->
+    <div class="animated-card top-card" *ngIf="astuce">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Astuce du jour</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{ astuce }}
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Carte Citation (anime du bas) -->
+    <div class="animated-card bottom-card" *ngIf="citation">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Citation du jour</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{ citation }}
+        </ion-card-content>
+      </ion-card>
+    </div>
   </div>
-  
+
+  <!-- Template quand aucune donnée n'est disponible -->
+  <ng-template #noDataTemplate>
+    <div class="no-data-container">
+      <ion-card class="no-data-card">
+        <ion-card-content>
+          <ion-icon name="information-circle-outline" class="no-data-icon"></ion-icon>
+          <h3>Aucun contenu disponible</h3>
+          <p>Ni citation ni astuce n'est disponible pour aujourd'hui.</p>
+          <p>Revenez plus tard ou contactez votre administrateur.</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </ng-template>
+</div>
 </ion-content>
