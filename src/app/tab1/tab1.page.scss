@@ -158,3 +158,21 @@ ion-icon {
   outline: 2px solid #90caf9;
   outline-offset: 2px;
 }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  
+  ion-spinner {
+    width: 50px;
+    height: 50px;
+  }
+  
+  p {
+    margin-top: 16px;
+    color: #666;
+  }
+}

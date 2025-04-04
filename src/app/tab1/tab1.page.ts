@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth, onAuthStateChanged, User, signOut } from '@angular/fire/auth';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import {
   Firestore,
@@ -13,7 +13,6 @@ import {
   where,
   updateDoc
 } from '@angular/fire/firestore';
-import { auth } from 'firebase-admin';
 
 @Component({
   selector: 'app-tab1',
@@ -24,24 +23,27 @@ import { auth } from 'firebase-admin';
 export class Tab1Page implements OnInit {
   connected: boolean = false;
   employe: any = null;
-  entrepriseNom: string = ''; // Nom de l'entreprise (l'ID du document dans la collection entreprises)
-  formation: any = null; // Formation en cours assignée à l'employé
+  entrepriseNom: string = '';
+  formation: any = null;
   currentDay: number = 1;
   currentDayChallenges: Array<{ description: string; completed: boolean }> = [];
   private _storage: Storage | null = null;
-
+  isLoading: boolean = true;
+  loading: HTMLIonLoadingElement | null = null;
 
   constructor(
     private router: Router,
     private afAuth: Auth,
     private alertController: AlertController,
     private firestore: Firestore,
-    private storage: Storage  ) {
+    private storage: Storage,
+    private loadingController: LoadingController
+  ) {
     this.checkAuthState();
   }
 
   async ngOnInit() {
-    await this.initStorage(); // Initialise Storage avant utilisation
+    await this.initStorage();
     await this.loadStoredDay();
   }
 
@@ -58,36 +60,48 @@ export class Tab1Page implements OnInit {
     }
   }
 
+  private async showLoading() {
+    this.loading = await this.loadingController.create({
+      message: 'Chargement en cours...',
+      spinner: 'crescent'
+    });
+    await this.loading.present();
+  }
+
+  private async dismissLoading() {
+    if (this.loading) {
+      await this.loading.dismiss();
+      this.loading = null;
+    }
+    this.isLoading = false;
+  }
+
   private checkAuthState() {
+    this.showLoading();
     onAuthStateChanged(this.afAuth, async (user: User | null) => {
       if (user) {
         this.connected = true;
-        await this.getEmployeData(user.uid);  // Récupérer les données de l'employé
+        await this.getEmployeData(user.uid);
       } else {
         this.connected = false;
+        this.dismissLoading();
       }
     });
   }
 
   private async getEmployeData(userId: string) {
     try {
-      // Référence à la collection "entreprises"
       const entreprisesCollectionRef = collection(this.firestore, 'entreprises');
       const entreprisesSnapshot = await getDocs(entreprisesCollectionRef);
   
-      // Parcourir chaque entreprise pour trouver l'employé
       for (const entrepriseDoc of entreprisesSnapshot.docs) {
-        const entrepriseId = entrepriseDoc.id; // Récupérer l'ID de l'entreprise
-  
-        // Référence à la sous-collection "employes"
+        const entrepriseId = entrepriseDoc.id;
         const employeDocRef = doc(this.firestore, `entreprises/${entrepriseId}/employes/${userId}`);
         const employeSnapshot = await getDoc(employeDocRef);
   
         if (employeSnapshot.exists()) {
           this.employe = employeSnapshot.data();
-          console.log(`Employé trouvé dans l'entreprise ID: ${entrepriseId}`);
           
-          // Charger les formations de l'employé
           const formationsRef = collection(employeDocRef, 'formations');
           const q = query(formationsRef, where('statut', '==', 'En cours'));
           const querySnapshot = await getDocs(q);
@@ -95,19 +109,19 @@ export class Tab1Page implements OnInit {
           if (!querySnapshot.empty) {
             this.formation = querySnapshot.docs[0].data();
             this.formation.id = querySnapshot.docs[0].id;
-            console.log('Formation en cours trouvée:', this.formation);
             this.loadChallengesForDay();
-          } else {
-            console.log("Aucune formation en cours trouvée !");
           }
           
-          return; // Arrêter la boucle dès qu'on trouve l'employé
+          this.dismissLoading();
+          return;
         }
       }
   
       console.error('Employé non trouvé dans aucune entreprise.');
+      this.dismissLoading();
     } catch (error) {
       console.error("Erreur lors de la récupération des données:", error);
+      this.dismissLoading();
     }
   }  
 
@@ -117,7 +131,7 @@ export class Tab1Page implements OnInit {
       if (dayData.defis && Array.isArray(dayData.defis)) {
         this.currentDayChallenges = dayData.defis.map((challenge: string) => ({
           description: challenge,
-          completed: false  // Par défaut, aucun défi n'est complété au chargement
+          completed: false
         }));
       } else {
         this.currentDayChallenges = [];
@@ -127,19 +141,19 @@ export class Tab1Page implements OnInit {
     }
   }
 
-  nextDay() {
+  async nextDay() {
     if (this.formation && this.formation.defis && this.currentDay < this.formation.defis.length) {
       this.currentDay++;
+      await this.updateOtherTabs();
       this.loadChallengesForDay();
-      localStorage.setItem('currentDay', this.currentDay.toString()); // 🔥 Mise à jour locale
     }
   }
   
-  previousDay() {
+  async previousDay() {
     if (this.currentDay > 1) {
       this.currentDay--;
+      await this.updateOtherTabs();
       this.loadChallengesForDay();
-      localStorage.setItem('currentDay', this.currentDay.toString()); // 🔥 Mise à jour locale
     }
   }  
 
@@ -178,13 +192,12 @@ export class Tab1Page implements OnInit {
     }
   }
 
-  // Ajoute cette fonction dans Tab1Page
   async updateOtherTabs() {
-    await this.storage.set('currentDay', this.currentDay);
-    console.log("Jour mis à jour dans Storage:", this.currentDay);
+    if (this._storage) {
+      await this._storage.set('currentDay', this.currentDay);
+    }
   }
   
-
   goToProfilePage() {
     this.router.navigate(['/tabs/profil']);
   }
