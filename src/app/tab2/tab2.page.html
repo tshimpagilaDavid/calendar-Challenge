@@ -1,12 +1,70 @@
 <ion-header collapse="condense">
   <ion-toolbar class="transparent-toolbar">
     <ion-label class="centered-label" style="color: #d570fa;">
-      Mes Coaching
+      Mes Défis
     </ion-label>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="coaching-content">
+  <div class="spinner-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <div class="no-coaching-wrapper" *ngIf="!isLoading">
+    <ion-item lines="none" class="day-header" [class.day-change-animation]="dayChanged">
+      <div class="day-text">Jour {{ currentDay }} - Défi Spécial</div>
+    </ion-item>
+    <!-- Conteneur des cartes avec scroll si nécessaire -->
+    <div class="cards-container" *ngIf="specialDefi; else noSpecialChallenge">
+      <!-- Carte image -->
+      <ion-card class="coaching-image-card">
+        <div class="image-container">
+          <img src="assets/defis.png" alt="Aucun coaching disponible" />
+        </div>
+      </ion-card>
+
+      <!-- Carte information -->
+      <ion-card class="coaching-info-card">
+        <ion-card-content>
+          <div class="card-content-wrapper">
+            <ion-icon name="calendar-outline" class="card-icon"></ion-icon>
+            <h3 class="card-title">Votre défi hebdomadaire</h3>
+            <div class="card-text">
+              <p>{{ specialDefi }}</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Template quand aucun défi n'est disponible -->
+  <ng-template #noSpecialChallenge>
+    <div class="no-coaching-wrapper">
+      <!-- Conteneur des cartes avec scroll si nécessaire -->
+      <div class="cards-container">
+        <!-- Carte image -->
+        <ion-card class="coaching-image-card">
+          <div class="image-container">
+            <img src="assets/defis.png" alt="Aucun coaching disponible" />
+          </div>
+        </ion-card>
+
+        <!-- Carte information -->
+        <ion-card class="coaching-info-card">
+          <ion-card-content>
+            <div class="card-content-wrapper">
+              <ion-icon name="calendar-outline" class="card-icon"></ion-icon>
+              <h3 class="card-title">Aucun défi hebdomadaire disponible</h3>
+              <div class="card-text">
+                <p>Vous n'avez actuellement aucun coaching en cours.</p>
+                <p>Veuillez contacter votre administrateur pour plus d'informations.</p>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </ng-template>
 </ion-content>

@@ -64,6 +64,13 @@ ion-icon {
   color: red !important; /* Texte du bouton Déconnexion */
 }
 
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Prend toute la hauteur de la page */
+}
+
 .container {
   padding: 16px;
   max-width: 800px;

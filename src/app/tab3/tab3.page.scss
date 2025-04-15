@@ -161,6 +161,16 @@ ion-card-content {
   height: 100vh; /* Prend toute la hauteur de la page */
 }
 
+@keyframes dayChangePulse {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.day-change-animation {
+  animation: dayChangePulse 0.5s ease;
+}
+
 .no-data-container {
   display: flex;
   justify-content: center;

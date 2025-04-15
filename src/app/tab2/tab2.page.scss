@@ -14,3 +14,158 @@
     --ion-background-color-rgb: 255, 255, 255, 0; /* This ensures no background color */
     box-shadow: none; /* Removes any shadow */
   }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Prend toute la hauteur de la page */
+  }
+
+  /* Style pour l'en-tête du jour */
+.day-header {
+  --background: #d570fa;
+  --color: white;
+  border-radius: 25px;
+  margin: 0 14px 40px 14px;
+  height: 45px;
+  transform: translateY(10px);
+  box-shadow: 0 2px 8px rgba(213, 112, 250, 0.3);
+}
+
+.day-text {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Animation pour le changement de jour */
+@keyframes dayChangePulse {
+  0% { transform: translateY(10px) scale(1); }
+  50% { transform: translateY(10px) scale(1.05); }
+  100% { transform: translateY(10px) scale(1); }
+}
+
+.day-change-animation {
+  animation: dayChangePulse 0.5s ease;
+}
+
+/* Coaching Page - Optimized CSS */
+.coaching-content {
+  --background: #f9f9f9;
+}
+
+.no-coaching-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 16px;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+}
+
+.coaching-image-card {
+  background: #d8d8d8;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  overflow: hidden;
+  height: auto;
+  min-height: 200px;
+  
+  .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    
+    img {
+      max-width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+    }
+  }
+}
+
+.coaching-info-card {
+  background: #d8d8d8;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  height: auto;
+  
+  ion-card-content {
+    padding: 24px;
+    height: 100%;
+    
+    .card-content-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      height: 100%;
+    }
+  }
+}
+
+.card-icon {
+  font-size: 56px;
+  color: #d570fa;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #2d2d2d;
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+}
+
+.card-text {
+  color: #5a5a5a;
+  line-height: 1.5;
+  
+  p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .cards-container {
+    padding: 8px;
+  }
+  
+  .coaching-image-card .image-container {
+    padding: 16px;
+    
+    img {
+      max-height: 200px;
+    }
+  }
+  
+  .coaching-info-card ion-card-content {
+    padding: 16px;
+  }
+  
+  .card-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+}

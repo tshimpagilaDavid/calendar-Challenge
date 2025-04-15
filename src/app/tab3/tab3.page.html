@@ -11,18 +11,19 @@
 </div>
 
 <div *ngIf="!isLoading">
-  <!-- Affichage normal quand il y a des données -->
-  <div *ngIf="astuce || citation; else noDataTemplate">
-    <ion-item lines="none" style="--background: #d570fa; 
+  <ion-item lines="none" style="--background: #d570fa; 
     transform: translate(0px, 10px);
     border-radius: 25px; 
     margin: 0 14px;
     height: 45px;
-    margin-bottom: 40px;">
+    margin-bottom: 40px;"
+    [class.day-change-animation]="dayChanged">
       <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
-        Jour {{ currentDay }}
+        Jour {{ currentDay }} - Astuces et Citations
       </div>
     </ion-item>
+  <!-- Affichage normal quand il y a des données -->
+  <div *ngIf="astuce || citation; else noDataTemplate">
 
     <!-- Carte Astuce (anime du haut) -->
     <div class="animated-card top-card" *ngIf="astuce">

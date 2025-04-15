@@ -14,7 +14,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<div class="spinner-container" *ngIf="isLoading">
+  <ion-spinner name="crescent"></ion-spinner>
+</div>
+
+<ion-content *ngIf="!isLoading" class="ion-padding">
   <!-- Card de salutation -->
   <ion-card style="background-color: #d8d8d8; height: 23%; margin-bottom: 25px;">
     <ion-card-content>
