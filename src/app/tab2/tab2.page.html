@@ -7,20 +7,27 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="coaching-content">
+  <!-- État de chargement -->
   <div class="spinner-container" *ngIf="isLoading">
-    <ion-spinner name="crescent"></ion-spinner>
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p class="loading-text">Chargement de votre défi...</p>
   </div>
 
-  <div class="no-coaching-wrapper" *ngIf="!isLoading">
-    <ion-item lines="none" class="day-header" [class.day-change-animation]="dayChanged">
+  <!-- Contenu principal -->
+  <div *ngIf="!isLoading">
+    <!-- En-tête animé -->
+    <ion-item lines="none" 
+              class="day-header"
+              [class.day-change-animation]="dayChanged">
       <div class="day-text">Jour {{ currentDay }} - Défi Spécial</div>
     </ion-item>
-    <!-- Conteneur des cartes avec scroll si nécessaire -->
-    <div class="cards-container" *ngIf="specialDefi; else noSpecialChallenge">
+
+    <!-- Contenu des cartes -->
+    <div *ngIf="hasData; else noDataTemplate" class="cards-container">
       <!-- Carte image -->
       <ion-card class="coaching-image-card">
         <div class="image-container">
-          <img src="assets/defis.png" alt="Aucun coaching disponible" />
+          <img src="assets/defis.png" alt="Illustration défi spécial" />
         </div>
       </ion-card>
 
@@ -28,26 +35,27 @@
       <ion-card class="coaching-info-card">
         <ion-card-content>
           <div class="card-content-wrapper">
-            <ion-icon name="calendar-outline" class="card-icon"></ion-icon>
-            <h3 class="card-title">Votre défi hebdomadaire</h3>
+            <ion-icon name="trophy-outline" class="card-icon"></ion-icon>
+            <h3 class="card-title">Votre défi du jour</h3>
             <div class="card-text">
               <p>{{ specialDefi }}</p>
             </div>
+            <ion-button fill="clear" class="action-button" (click)="markAsCompleted()">
+              <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+              Marquer comme terminé
+            </ion-button>
           </div>
         </ion-card-content>
       </ion-card>
     </div>
-  </div>
 
-  <!-- Template quand aucun défi n'est disponible -->
-  <ng-template #noSpecialChallenge>
-    <div class="no-coaching-wrapper">
-      <!-- Conteneur des cartes avec scroll si nécessaire -->
+    <!-- Template quand aucun défi n'est disponible -->
+    <ng-template #noDataTemplate>
       <div class="cards-container">
         <!-- Carte image -->
         <ion-card class="coaching-image-card">
           <div class="image-container">
-            <img src="assets/defis.png" alt="Aucun coaching disponible" />
+            <img src="assets/defis.png" alt="Aucun défi disponible" />
           </div>
         </ion-card>
 
@@ -55,16 +63,20 @@
         <ion-card class="coaching-info-card">
           <ion-card-content>
             <div class="card-content-wrapper">
-              <ion-icon name="calendar-outline" class="card-icon"></ion-icon>
-              <h3 class="card-title">Aucun défi hebdomadaire disponible</h3>
+              <ion-icon name="alert-circle-outline" class="card-icon"></ion-icon>
+              <h3 class="card-title">Aucun défi disponible</h3>
               <div class="card-text">
-                <p>Vous n'avez actuellement aucun coaching en cours.</p>
-                <p>Veuillez contacter votre administrateur pour plus d'informations.</p>
+                <p>Vous n'avez pas de défi spécial pour aujourd'hui.</p>
+                <p>Revenez demain ou contactez votre coach.</p>
               </div>
+              <ion-button fill="clear" class="action-button" (click)="reloadData()">
+                <ion-icon slot="start" name="refresh-outline"></ion-icon>
+                Actualiser
+              </ion-button>
             </div>
           </ion-card-content>
         </ion-card>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
+  </div>
 </ion-content>

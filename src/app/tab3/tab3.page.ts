@@ -23,10 +23,11 @@ export class Tab3Page implements OnInit, OnDestroy {
   citation: string = '';
   astuce: string = '';
   isLoading: boolean = true;
+  hasData: boolean = false;
   
-  // Initialisation explicite pour TypeScript
   private storageListener: (() => void) = () => {};
   private dayChangeListener: EventListener = () => {};
+  private dataTimeout: any = null;
 
   constructor(
     private firestore: Firestore,
@@ -41,24 +42,33 @@ export class Tab3Page implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.cleanupSyncListeners();
+    if (this.dataTimeout) {
+      clearTimeout(this.dataTimeout);
+    }
   }
 
   private async initializeData() {
     try {
-      // Charger le jour depuis le stockage avec fallback
       const storedDay = await this.storage.get('currentDay');
       const localDay = localStorage.getItem('currentDay');
       this.currentDay = storedDay ?? (localDay ? parseInt(localDay) : 1);
       
+      // Timeout pour éviter un chargement trop long
+      this.dataTimeout = setTimeout(() => {
+        if (this.isLoading) {
+          this.isLoading = false;
+          this.hasData = false;
+        }
+      }, 5000); // 5 secondes timeout
+
       await this.loadUserData();
     } catch (error) {
       console.error('Initialization error:', error);
-      this.isLoading = false;
+      this.handleDataLoadComplete(false);
     }
   }
 
   private setupSyncListeners() {
-    // 1. Écouteur pour les changements cross-tabs
     this.storageListener = () => {
       const newDay = localStorage.getItem('currentDay');
       if (newDay) {
@@ -67,7 +77,6 @@ export class Tab3Page implements OnInit, OnDestroy {
     };
     window.addEventListener('storage', this.storageListener);
 
-    // 2. Écouteur pour le même onglet
     this.dayChangeListener = ((event: DayChangedEvent) => {
       if (event.detail?.day !== this.currentDay) {
         this.handleDayUpdate(event.detail.day);
@@ -87,22 +96,16 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.dayChanged = true;
     this.currentDay = newDay;
     this.isLoading = true;
+    this.hasData = false;
     this.citation = '';
     this.astuce = '';
 
     try {
-      // Sauvegarder le nouveau jour
       await this.storage.set('currentDay', newDay);
-      
-      // Recharger les données
       await this.loadUserData();
     } catch (error) {
       console.error('Day update error:', error);
-    } finally {
-      setTimeout(() => {
-        this.dayChanged = false;
-        this.isLoading = false;
-      }, 500);
+      this.handleDataLoadComplete(false);
     }
   }
 
@@ -110,12 +113,13 @@ export class Tab3Page implements OnInit, OnDestroy {
     try {
       const user = await this.afAuth.currentUser;
       if (!user) {
-        this.isLoading = false;
+        this.handleDataLoadComplete(false);
         return;
       }
 
       const entreprisesSnapshot = await getDocs(collection(this.firestore, 'entreprises'));
       
+      let found = false;
       for (const entrepriseDoc of entreprisesSnapshot.docs) {
         const employeRef = doc(this.firestore, `entreprises/${entrepriseDoc.id}/employes/${user.uid}`);
         const employeSnap = await getDoc(employeRef);
@@ -123,22 +127,36 @@ export class Tab3Page implements OnInit, OnDestroy {
         if (employeSnap.exists()) {
           this.employe = employeSnap.data();
           await this.loadFormationData(employeRef);
+          found = true;
           break;
         }
       }
+
+      if (!found) {
+        this.handleDataLoadComplete(false);
+      }
     } catch (error) {
       console.error("User data error:", error);
+      this.handleDataLoadComplete(false);
     }
   }
 
   private async loadFormationData(employeRef: any) {
-    const formationsRef = collection(employeRef, 'formations');
-    const q = query(formationsRef, where('statut', '==', 'En cours'));
-    const formationSnap = await getDocs(q);
-    
-    if (!formationSnap.empty) {
-      this.formation = formationSnap.docs[0].data();
-      this.updateDayData();
+    try {
+      const formationsRef = collection(employeRef, 'formations');
+      const q = query(formationsRef, where('statut', '==', 'En cours'));
+      const formationSnap = await getDocs(q);
+      
+      if (!formationSnap.empty) {
+        this.formation = formationSnap.docs[0].data();
+        this.updateDayData();
+        this.handleDataLoadComplete(true);
+      } else {
+        this.handleDataLoadComplete(false);
+      }
+    } catch (error) {
+      console.error("Formation data error:", error);
+      this.handleDataLoadComplete(false);
     }
   }
 
@@ -147,9 +165,36 @@ export class Tab3Page implements OnInit, OnDestroy {
       const dayData = this.formation.defis[this.currentDay - 1];
       this.citation = dayData.citation || '';
       this.astuce = dayData.astuce || '';
+      this.hasData = true;
     } else {
       this.citation = '';
       this.astuce = '';
+      this.hasData = false;
     }
+  }
+
+  private handleDataLoadComplete(success: boolean) {
+    if (this.dataTimeout) {
+      clearTimeout(this.dataTimeout);
+      this.dataTimeout = null;
+    }
+    
+    this.hasData = success;
+    this.isLoading = false;
+    
+    if (!success) {
+      this.citation = '';
+      this.astuce = '';
+    }
+    
+    setTimeout(() => {
+      this.dayChanged = false;
+    }, 500);
+  }
+
+  async reloadData() {
+    this.isLoading = true;
+    this.hasData = false;
+    await this.loadUserData();
   }
 }

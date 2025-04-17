@@ -5,63 +5,79 @@
     </ion-label>
   </ion-toolbar>
 </ion-header>
+
 <ion-content [fullscreen]="true">
-<div class="spinner-container" *ngIf="isLoading">
-  <ion-spinner name="crescent"></ion-spinner>
-</div>
-
-<div *ngIf="!isLoading">
-  <ion-item lines="none" style="--background: #d570fa; 
-    transform: translate(0px, 10px);
-    border-radius: 25px; 
-    margin: 0 14px;
-    height: 45px;
-    margin-bottom: 40px;"
-    [class.day-change-animation]="dayChanged">
-      <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
-        Jour {{ currentDay }} - Astuces et Citations
-      </div>
-    </ion-item>
-  <!-- Affichage normal quand il y a des données -->
-  <div *ngIf="astuce || citation; else noDataTemplate">
-
-    <!-- Carte Astuce (anime du haut) -->
-    <div class="animated-card top-card" *ngIf="astuce">
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Astuce du jour</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          {{ astuce }}
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <!-- Carte Citation (anime du bas) -->
-    <div class="animated-card bottom-card" *ngIf="citation">
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Citation du jour</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          {{ citation }}
-        </ion-card-content>
-      </ion-card>
-    </div>
+  <!-- État de chargement -->
+  <div class="spinner-container" *ngIf="isLoading">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p class="loading-text">Chargement en cours...</p>
   </div>
 
-  <!-- Template quand aucune donnée n'est disponible -->
-  <ng-template #noDataTemplate>
-    <div class="no-data-container">
-      <ion-card class="no-data-card">
-        <ion-card-content>
-          <ion-icon name="information-circle-outline" class="no-data-icon"></ion-icon>
-          <h3>Aucun contenu disponible</h3>
-          <p>Ni citation ni astuce n'est disponible pour aujourd'hui.</p>
-          <p>Revenez plus tard ou contactez votre administrateur.</p>
-        </ion-card-content>
-      </ion-card>
+<div>
+
+  <!-- Contenu principal une fois chargé -->
+  <ion-item lines="none" style="--background: #d570fa; 
+  transform: translate(0px, 10px);
+  border-radius: 25px; 
+  margin: 0 14px;
+  height: 45px;
+  margin-bottom: 40px;"
+  [class.day-change-animation]="dayChanged">
+    <div style="flex: 1; text-align: center; color: white; font-weight: bold;">
+      Jour {{ currentDay }} - Astuces et Citations
     </div>
-  </ng-template>
-</div>
+  </ion-item>
+
+    <!-- Affichage des données -->
+    <div *ngIf="hasData; else noDataTemplate" class="data-container">
+      <!-- Carte Astuce -->
+      <div class="animated-card top-card" *ngIf="astuce" @fadeInUp>
+        <ion-card class="custom-card">
+          <ion-card-header class="card-header">
+            <ion-card-title>
+              <ion-icon name="bulb-outline" class="card-icon"></ion-icon>
+              Astuce du jour
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="card-content">
+            {{ astuce }}
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Carte Citation -->
+      <div class="animated-card bottom-card" *ngIf="citation" @fadeInUp>
+        <ion-card class="custom-card">
+          <ion-card-header class="card-header">
+            <ion-card-title>
+              <ion-icon name="chatbubbles-outline" class="card-icon"></ion-icon>
+              Citation du jour
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="card-content">
+            "{{ citation }}"
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
+    <!-- Template quand aucune donnée n'est disponible -->
+    <ng-template #noDataTemplate>
+      <div class="no-data-container">
+        <ion-card class="no-data-card">
+          <ion-card-content>
+            <div class="no-data-content">
+              <ion-icon name="information-circle-outline" class="no-data-icon"></ion-icon>
+              <h3>Aucun contenu disponible</h3>
+              <p>Ni citation ni astuce n'est disponible pour le jour {{ currentDay }}.</p>
+              <ion-button fill="clear" size="small" (click)="reloadData()">
+                <ion-icon slot="start" name="refresh-outline"></ion-icon>
+                Réessayer
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ng-template>
+  </div>
 </ion-content>

@@ -1,4 +1,4 @@
-<ion-header collapse="condense">
+<ion-header>
   <ion-toolbar class="transparent-toolbar">
     <ion-buttons slot="start">
       <ion-button menu="main-menu" (click)="presentLogoutAlert()">
@@ -55,28 +55,37 @@
     <p style="font-weight: 800; font-size: 20px; margin-left: 16px; margin-bottom: 20px;">Challenge du Jour {{ currentDay }}</p>
     
     <!-- Affichage conditionnel -->
-    <div *ngIf="currentDayChallenges.length > 0; else noDataTemplate">
-      <ion-list style="background: transparent; margin-bottom: 25px;">
-        <div *ngFor="let defis of currentDayChallenges; let i = index" 
-             style="display: flex; align-items: center; margin-bottom: 15px;">
-          <ion-item 
-            style="--background: #d570fa; 
-                   --border-radius: 12px;
-                   --color: white;
-                   flex: 1;
-                   margin-right: 8px;"
-            lines="none">
-            <ion-label>Challenge {{ i + 1 }} : {{ defis.description }}</ion-label>
-          </ion-item>
-          <ion-checkbox [(ngModel)]="defis.completed" 
-          style="--size: 24px; --background-checked: #d570fa;"></ion-checkbox>
-        </div>
-      </ion-list>
-    
-      <p style="margin: 16px;">
-        Progression : {{ completedChallengesCount }} / {{ currentDayChallenges.length }} défis accomplis.
-      </p>
+<!-- Affichage conditionnel -->
+<div *ngIf="currentDayChallenges.length > 0; else noDataTemplate">
+  <ion-list style="background: transparent; margin-bottom: 25px;">
+    <div *ngFor="let defis of currentDayChallenges; let i = index" 
+         style="display: flex; align-items: center; margin-bottom: 15px;">
+      <ion-item 
+        style="--background: #d570fa; 
+               --border-radius: 12px;
+               --color: white;
+               flex: 1;
+               margin-right: 8px;"
+        lines="none">
+        <ion-label>Challenge {{ i + 1 }} : {{ defis.description }}</ion-label>
+      </ion-item>
+      
+      <ion-checkbox
+        [checked]="defis.completed"
+        style="--size: 24px; --background-checked: #d570fa;">
+      </ion-checkbox>
     </div>
+  </ion-list>
+
+  <!-- Progression du jour -->
+  <p style="margin: 16px;">
+    Progression du jour : {{ completedChallengesCount }} / {{ currentDayChallenges.length }} défis accomplis.
+  </p>
+
+  <!-- Progression globale -->
+
+
+</div>
 
     <!-- Template quand aucune donnée n'est disponible -->
     <ng-template #noDataTemplate>
@@ -89,6 +98,10 @@
             <br>
             Contactez votre administrateur pour plus d'informations.
           </p>
+          <ion-button fill="clear" (click)="reloadData()" class="retry-button">
+            <ion-icon slot="start" name="refresh-outline"></ion-icon>
+            Réessayer
+          </ion-button>
         </ion-card-content>
       </ion-card>
     </ng-template>
