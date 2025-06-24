@@ -52,7 +52,7 @@
 
   <!-- Défis du jour -->
   <div style="margin-top: 16px;">
-    <p style="font-weight: 800; font-size: 20px; margin-left: 16px; margin-bottom: 20px;">Challenge du Jour {{ currentDay }}</p>
+    <p style="font-weight: 800; font-size: 20px; margin-left: 16px; margin-bottom: 20px;">Challenge réaliser {{completedChallengesCount}} / {{currentDayChallenges.length}}</p>
     
     <!-- Affichage conditionnel -->
 <!-- Affichage conditionnel -->
@@ -72,19 +72,21 @@
       
       <ion-checkbox
         [checked]="defis.completed"
+        (ionChange)="toggleChallenge(i)"
         style="--size: 24px; --background-checked: #d570fa;">
       </ion-checkbox>
     </div>
   </ion-list>
 
   <!-- Progression du jour -->
-  <p style="margin: 16px;">
-    Progression du jour : {{ completedChallengesCount }} / {{ currentDayChallenges.length }} défis accomplis.
-  </p>
-
-  <!-- Progression globale -->
-
-
+  <!-- Ajoutez ces éléments à votre template -->
+<div style="margin: 16px;">  
+  <p>{{ (totalChallengesCompleted / getTotalChallenges() * 100).toFixed(0) }}%  défis complétés sur toute la formation</p>
+  <ion-progress-bar 
+    [value]="totalChallengesCompleted / getTotalChallenges()"
+    style="margin-top: 10px;">
+  </ion-progress-bar>
+</div>
 </div>
 
     <!-- Template quand aucune donnée n'est disponible -->

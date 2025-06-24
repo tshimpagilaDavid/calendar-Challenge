@@ -4,6 +4,7 @@ import { Auth, onAuthStateChanged, User, signOut } from '@angular/fire/auth';
 import { AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Firestore, doc, collection, getDocs, getDoc, query, where } from '@angular/fire/firestore';
+import { setDoc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-tab1',
@@ -22,6 +23,8 @@ export class Tab1Page implements OnInit, OnDestroy {
   hasData: boolean = false;
   private authUnsubscribe: () => void = () => {};
   private dataTimeout: any = null;
+  totalChallengesCompleted: number = 0;
+  dailyProgress: { day: number, completed: number, total: number }[] = [];
 
   constructor(
     private router: Router,
@@ -43,6 +46,118 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
   }
 
+  // Bascule l’état d’un défi (complété ou non)
+  async toggleChallenge(index: number) {
+    console.log('Toggle défi index:', index);
+    this.currentDayChallenges[index].completed = !this.currentDayChallenges[index].completed;
+  
+    // Mettre à jour les statistiques de progression
+    await this.updateProgressStats();
+  
+    // Sauvegarder les défis dans Firestore
+    await this.saveChallenges();
+  }
+  
+
+  // Met à jour les statistiques de progression de la formation
+async updateProgressStats() {
+  const currentDayCompleted = this.currentDayChallenges.filter(c => c.completed).length;
+  const currentDayTotal = this.currentDayChallenges.length;
+
+  console.log(`Progression jour ${this.currentDay} :`, currentDayCompleted, '/', currentDayTotal);
+
+  // Mettre à jour ou ajouter les statistiques du jour dans le tableau dailyProgress
+  const dayIndex = this.dailyProgress.findIndex(d => d.day === this.currentDay);
+  if (dayIndex >= 0) {
+    this.dailyProgress[dayIndex] = {
+      day: this.currentDay,
+      completed: currentDayCompleted,
+      total: currentDayTotal
+    };
+  } else {
+    this.dailyProgress.push({
+      day: this.currentDay,
+      completed: currentDayCompleted,
+      total: currentDayTotal
+    });
+  }
+
+  // Met à jour le total des défis complétés sur toute la formation
+  this.totalChallengesCompleted = this.dailyProgress.reduce((sum, day) => sum + day.completed, 0);
+  console.log('Total complétés:', this.totalChallengesCompleted);
+
+  // Sauvegarde dans Firestore après mise à jour des statistiques
+  await this.saveChallenges();
+}
+
+
+  // Sauvegarde les défis et les statistiques dans Firestore
+  async saveChallenges() {
+    try {
+      const user = await this.afAuth.currentUser;
+      const entrepriseId = 'SING'; // À remplacer par une valeur dynamique
+      const formationId = 'confiance-en-soi'; // À remplacer par une valeur dynamique
+  
+      if (user?.uid && entrepriseId && formationId) {
+        const formationDocRef = doc(
+          this.firestore,
+          `entreprises/${entrepriseId}/employes/${user.uid}/formations/${formationId}`
+        );
+  
+        const updatedData = {
+          progress: {
+            daily: this.dailyProgress,
+            totalCompleted: this.totalChallengesCompleted,
+            lastUpdated: new Date().toISOString()
+          }
+        };
+  
+        await setDoc(formationDocRef, updatedData, { merge: true });
+        console.log('Progression sauvegardée avec succès:', updatedData);
+      } else {
+        console.error('Utilisateur ou formation non trouvée.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde dans Firestore:', error);
+      throw error; // Pour diagnostiquer les erreurs
+    }
+  }
+
+  // Calcule le nombre total de défis de la formation
+  getTotalChallenges(): number {
+    if (!this.formation?.defis) return 0;
+
+    return this.formation.defis.reduce((total: number, day: any) => {
+      return total + (day.defis?.length || 0);
+    }, 0);
+  }
+
+  private async updateChallengesForCurrentDay() {
+    if (!this.formation?.defis?.[this.currentDay - 1]) {
+      this.currentDayChallenges = [];
+      return;
+    }
+  
+    const dayData = this.formation.defis[this.currentDay - 1];
+  
+    // Chercher la progression pour le jour courant dans dailyProgress
+    const dayProgress = this.dailyProgress.find(d => d.day === this.currentDay) || {
+      day: this.currentDay,
+      completed: 0,
+      total: dayData.defis.length
+    };
+  
+    // Initialiser les défis avec leur état de complétion
+    this.currentDayChallenges = dayData.defis.map((challenge: string, index: number) => ({
+      description: challenge,
+      completed: index < dayProgress.completed // Restaurer l'état complété
+    }));
+  
+    // Mettre à jour les statistiques locales si nécessaire
+    await this.updateProgressStats();
+  }
+  
+
   private async initializeApp() {
     await this.storage.create();
     this.authUnsubscribe = onAuthStateChanged(this.afAuth, this.handleAuthState.bind(this));
@@ -52,19 +167,20 @@ export class Tab1Page implements OnInit, OnDestroy {
     try {
       this.isLoading = true;
       this.hasData = false;
-      
-      // Timeout pour éviter un chargement trop long
-      this.dataTimeout = setTimeout(() => {
-        if (this.isLoading) {
-          this.handleDataLoadComplete(false);
-        }
-      }, 8000); // 8 secondes timeout
-
+  
+      // Charger le jour courant
       await this.loadSavedDay();
+  
+      // Charger les données utilisateur
       const user = await this.afAuth.currentUser;
       if (user) {
         await this.loadUserData(user.uid);
       }
+  
+      // Mettre à jour les défis après avoir chargé toutes les données
+      await this.updateChallengesForCurrentDay();
+  
+      this.handleDataLoadComplete(true);
     } catch (error) {
       console.error('Initialization error:', error);
       this.handleDataLoadComplete(false);
@@ -124,50 +240,41 @@ export class Tab1Page implements OnInit, OnDestroy {
       const formationsRef = collection(employeRef, 'formations');
       const q = query(formationsRef, where('statut', '==', 'En cours'));
       const querySnapshot = await getDocs(q);
-
+  
       if (!querySnapshot.empty) {
-        this.formation = querySnapshot.docs[0].data();
-        this.formation.id = querySnapshot.docs[0].id;
-        this.updateChallengesForCurrentDay();
+        const formationDoc = querySnapshot.docs[0];
+        this.formation = formationDoc.data();
+        this.formation.id = formationDoc.id;
+  
+        // Charger la progression depuis Firestore
+        const progressData = this.formation.progress || {};
+        this.dailyProgress = progressData.daily || [];
+        this.totalChallengesCompleted = progressData.totalCompleted || 0;
+  
+        // Mettre à jour les défis du jour courant
+        await this.updateChallengesForCurrentDay();
         return true;
       }
       return false;
     } catch (error) {
-      console.error("Formation loading error:", error);
+      console.error('Formation loading error:', error);
       return false;
     }
   }
 
-  private updateChallengesForCurrentDay() {
-    if (!this.formation?.defis?.[this.currentDay - 1]) {
-      this.currentDayChallenges = [];
-      this.hasData = false;
-      return;
-    }
-
-    const dayData = this.formation.defis[this.currentDay - 1];
-    this.currentDayChallenges = dayData.defis?.map((challenge: string) => ({
-      description: challenge,
-      completed: false
-    })) || [];
-    
-    this.hasData = this.currentDayChallenges.length > 0;
-  }
-
   private async syncDayChange(newDay: number) {
     if (newDay === this.currentDay) return;
-    
+  
     this.isLoading = true;
     this.currentDay = newDay;
-    
+  
     try {
       await this.storage.set('currentDay', newDay);
-      localStorage.setItem('currentDay', newDay.toString());
       window.dispatchEvent(new CustomEvent('dayChanged', {
         detail: { day: newDay }
       }));
-      
-      this.updateChallengesForCurrentDay();
+  
+      await this.updateChallengesForCurrentDay();
     } catch (error) {
       console.error('Day sync error:', error);
     } finally {
@@ -209,10 +316,17 @@ export class Tab1Page implements OnInit, OnDestroy {
   async reloadData() {
     this.isLoading = true;
     this.hasData = false;
-    const user = await this.afAuth.currentUser;
-    if (user) {
-      await this.loadUserData(user.uid);
-    } else {
+    try {
+      const user = await this.afAuth.currentUser;
+      if (user) {
+        await this.loadUserData(user.uid);
+        await this.updateChallengesForCurrentDay();
+        this.handleDataLoadComplete(true);
+      } else {
+        this.handleDataLoadComplete(false);
+      }
+    } catch (error) {
+      console.error('Reload error:', error);
       this.handleDataLoadComplete(false);
     }
   }

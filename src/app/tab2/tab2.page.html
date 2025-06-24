@@ -1,12 +1,11 @@
-<ion-header collapse="condense">
+<ion-content [fullscreen]="true" class="coaching-content">
+  <ion-header>
   <ion-toolbar class="transparent-toolbar">
     <ion-label class="centered-label" style="color: #d570fa;">
       Mes Défis
     </ion-label>
   </ion-toolbar>
 </ion-header>
-
-<ion-content [fullscreen]="true" class="coaching-content">
   <!-- État de chargement -->
   <div class="spinner-container" *ngIf="isLoading">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -67,7 +66,7 @@
               <h3 class="card-title">Aucun défi disponible</h3>
               <div class="card-text">
                 <p>Vous n'avez pas de défi spécial pour aujourd'hui.</p>
-                <p>Revenez demain ou contactez votre coach.</p>
+                <p>Revenez durant les jours 7, 21, ou 28.</p>
               </div>
               <ion-button fill="clear" class="action-button" (click)="reloadData()">
                 <ion-icon slot="start" name="refresh-outline"></ion-icon>
