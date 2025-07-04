@@ -1,16 +1,17 @@
 <ion-content [fullscreen]="true" class="coaching-content">
   <ion-header>
   <ion-toolbar class="transparent-toolbar">
-    <ion-label class="centered-label" style="color: #d570fa;">
+    <ion-label class="centered-label" style="color: #ff69b4;">
       Mes Défis
     </ion-label>
   </ion-toolbar>
 </ion-header>
   <!-- État de chargement -->
   <div class="spinner-container" *ngIf="isLoading">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">Chargement de votre défi...</p>
+    <ion-spinner name="crescent" style="color:#ff69b4;"></ion-spinner>
+    <p class="loading-text">Chargement en cours...</p>
   </div>
+
 
   <!-- Contenu principal -->
   <div *ngIf="!isLoading">

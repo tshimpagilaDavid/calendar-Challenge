@@ -5,6 +5,8 @@ import { AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Firestore, doc, collection, getDocs, getDoc, query, where } from '@angular/fire/firestore';
 import { setDoc } from 'firebase/firestore';
+import confetti from 'canvas-confetti';
+
 
 @Component({
   selector: 'app-tab1',
@@ -46,17 +48,52 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
   }
 
-  // Bascule l’état d’un défi (complété ou non)
-  async toggleChallenge(index: number) {
-    console.log('Toggle défi index:', index);
-    this.currentDayChallenges[index].completed = !this.currentDayChallenges[index].completed;
+  // Bascule l’état d’un défi (complété ou non) avec animation de confettis
+async toggleChallenge(index: number) {
+  const challenge = this.currentDayChallenges[index];
+  const wasCompleted = challenge.completed;
   
-    // Mettre à jour les statistiques de progression
-    await this.updateProgressStats();
-  
-    // Sauvegarder les défis dans Firestore
-    await this.saveChallenges();
+  // Inverse l'état
+  challenge.completed = !wasCompleted;
+
+  // Déclenche les confettis uniquement quand on passe à "complété"
+  if (!wasCompleted && challenge.completed) {
+    this.fireCelebrationConfetti();
   }
+
+  // Mettre à jour les statistiques et sauvegarder
+  await this.updateProgressStats();
+  await this.saveChallenges();
+
+}
+
+// Animation de confettis customisée
+private fireCelebrationConfetti() {
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.6 }, // Position verticale (0.6 = bas de l'écran)
+    colors: [
+      '#d570fa', // Violet clair
+      '#ff69b4', // Rose vif
+      '#a18aff', // Lavande
+      '#ffffff'  // Blanc
+    ],
+    shapes: ['circle', 'star'], // Formes variées
+    scalar: 0.8 // Taille légèrement réduite
+  });
+
+  // Optionnel : Petite explosion supplémentaire après 300ms
+  setTimeout(() => {
+    confetti({
+      particleCount: 50,
+      spread: 90,
+      origin: { y: 0.5 },
+      colors: ['#ff69b4'],
+      scalar: 0.5
+    });
+  }, 300);
+}
   
 
   // Met à jour les statistiques de progression de la formation

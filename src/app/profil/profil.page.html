@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar class="transparent-toolbar">
-    <ion-label class="centered-label" style="color: #d570fa;">
+    <ion-label class="centered-label" style="color: #ff69b4;">
       Profil utilisateur
     </ion-label>
   </ion-toolbar>
@@ -10,8 +10,10 @@
   <!-- Afficher un spinner pendant le chargement -->
   <!-- Conteneur pour centrer le spinner -->
   <div class="spinner-container" *ngIf="isLoading">
-    <ion-spinner name="crescent"></ion-spinner>
+    <ion-spinner name="crescent" style="color:#ff69b4;"></ion-spinner>
+    <p class="loading-text">Chargement en cours...</p>
   </div>
+
 
   <!-- Afficher les données une fois chargées -->
   <ng-container *ngIf="!isLoading && employee">
@@ -32,17 +34,17 @@
     <!-- Carte grise avec les informations de l'employé -->
     <ion-card class="info-card">
       <ion-card-content>
-        <h2 style="font-weight: 600;color: #d570fa;">Email</h2>
+        <h2 style="font-weight: 600;color: #ff69b4;">Email</h2>
         <ion-item class="trans" lines="none">
           <ion-icon name="mail-outline" slot="start"></ion-icon>
           <ion-label class="ion-text-center">{{ employee.email }}</ion-label>
         </ion-item>
-        <h2 style="font-weight: 600;color: #d570fa;">Entreprise</h2>
+        <h2 style="font-weight: 600;color: #ff69b4;">Entreprise</h2>
         <ion-item class="trans" lines="none">
           <ion-icon name="business-outline"></ion-icon>
           <ion-label class="ion-text-center">{{ employee.entreprise }}</ion-label>
         </ion-item>
-        <h2 style="font-weight: 600;color: #d570fa;">Numéro de téléphone</h2>
+        <h2 style="font-weight: 600;color: #ff69b4;">Numéro de téléphone</h2>
         <ion-item class="trans" lines="none">
           <ion-icon name="call-outline" slot="start"></ion-icon>
           <ion-label class="ion-text-center">{{ employee.phone }}</ion-label>

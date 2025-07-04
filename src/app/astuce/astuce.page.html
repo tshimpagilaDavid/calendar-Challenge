@@ -9,7 +9,7 @@
   <div *ngIf="!isLoading">
     <!-- Day Header -->
     <ion-item lines="none" class="day-header" [class.day-change-animation]="dayChanged">
-      <div class="day-header-text">Jour {{ currentDay }} - Citation</div>
+      <div class="day-header-text">Jour {{ currentDay }} - Astuces</div>
     </ion-item>
 
     <!-- Circular Image -->
@@ -19,8 +19,8 @@
 
     <!-- Quote Card or No Data -->
     <div class="container" *ngIf="hasData; else noDataTemplate">
-      <div class="quote-card" *ngIf="citation">
-        <p class="card-text text-center">{{ citation }}</p>
+      <div class="quote-card" *ngIf="astuce">
+        <p class="card-text text-center">{{ astuce }}</p>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
             <div class="no-data-content">
               <ion-icon name="information-circle-outline" class="no-data-icon"></ion-icon>
               <h3>Aucun contenu disponible</h3>
-              <p>Aucune citation n'est disponible pour le jour {{ currentDay }}.</p>
+              <p>Aucune astuce n'est disponible pour le jour {{ currentDay }}.</p>
               <ion-button fill="clear" size="small" (click)="reloadData()">
                 <ion-icon slot="start" name="refresh-outline"></ion-icon>
                 Réessayer

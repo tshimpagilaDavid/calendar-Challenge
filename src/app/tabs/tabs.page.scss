@@ -10,7 +10,7 @@ ion-tab-bar {
   ion-tab-button {
     --color: #000000;
     --color-selected: #ffffff; /* Texte blanc quand sélectionné */
-    --ripple-color: #d570fa; /* Effet de ripple violet */
+    --ripple-color: #ff69b4; /* Effet de ripple violet */
     transition: all 0.3s ease;
     background: transparent;
     overflow: hidden;
@@ -19,7 +19,7 @@ ion-tab-bar {
   
   /* Style quand l'onglet est sélectionné */
   ion-tab-button.tab-selected {
-    background-color: #d570fa; /* Fond violet */
+    background-color: #ff69b4; /* Fond violet */
     border-radius: 12px;
     margin: 6px 4px;
     height: 50px;
@@ -53,7 +53,7 @@ ion-tab-bar {
   
   /* Effet au survol */
   ion-tab-button:hover {
-    --color: #d570fa;
+    --color: #ff69b4;
   }
   
   /* Animation quand sélectionné */

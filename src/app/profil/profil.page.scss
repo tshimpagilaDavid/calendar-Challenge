@@ -1,3 +1,27 @@
+.spinner-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+ion-spinner {
+  --color: #ff69b4;
+}
+
+.loading-text {
+  color: #ff69b4;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 .centered-label {
   position: absolute;
   left: 50%;
@@ -18,19 +42,13 @@
 .trans {
   --background: transparent;
 }
-.spinner-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Prend toute la hauteur de la page */
-}
 
 .custom-header {
-    background-color: #d570fa; /* Couleur de fond en hexadécimal */
+    background-color: #ff69b4; /* Couleur de fond en hexadécimal */
   }
   
   .custom-header ion-toolbar {
-    --background: #d570fa; /* Couleur de fond de la toolbar en hexadécimal */
+    --background: #ff69b4; /* Couleur de fond de la toolbar en hexadécimal */
     --color: white; /* Couleur du texte en blanc */
   }
 /* Conteneur principal */
@@ -40,7 +58,7 @@
   justify-content: center;
   text-align: center;
   align-items: center;
-  background-color: #d570fa; /* Rose */
+  background-color: #ff69b4; /* Rose */
   width: 190px;
   height: 190px;
   margin: 20px auto; /* Espace autour du carré rose */
