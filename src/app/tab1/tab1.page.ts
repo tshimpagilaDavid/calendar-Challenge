@@ -6,6 +6,7 @@ import { Storage } from '@ionic/storage-angular';
 import { Firestore, doc, collection, getDocs, getDoc, query, where } from '@angular/fire/firestore';
 import { setDoc } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
+import { ToastController } from '@ionic/angular';
 
 
 @Component({
@@ -33,8 +34,18 @@ export class Tab1Page implements OnInit, OnDestroy {
     private afAuth: Auth,
     private alertController: AlertController,
     private firestore: Firestore,
-    private storage: Storage
+    private storage: Storage,
+    private toastController: ToastController
   ) {}
+
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'top',
+    });
+    await toast.present();
+  }
 
   async ngOnInit() {
     await this.initializeApp();

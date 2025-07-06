@@ -1,22 +1,22 @@
 <ion-content [fullscreen]="true" class="coaching-content">
   <ion-header>
-  <ion-toolbar class="transparent-toolbar">
-    <ion-label class="centered-label" style="color: #ff69b4;">
-      Mes Défis
-    </ion-label>
-  </ion-toolbar>
-</ion-header>
+    <ion-toolbar class="transparent-toolbar">
+      <ion-label class="centered-label" style="color: #ff69b4;">
+        Mes Défis
+      </ion-label>
+    </ion-toolbar>
+  </ion-header>
+
   <!-- État de chargement -->
   <div class="spinner-container" *ngIf="isLoading">
     <ion-spinner name="crescent" style="color:#ff69b4;"></ion-spinner>
     <p class="loading-text">Chargement en cours...</p>
   </div>
 
-
   <!-- Contenu principal -->
   <div *ngIf="!isLoading">
     <!-- En-tête animé -->
-    <ion-item lines="none" 
+    <ion-item lines="none"
               class="day-header"
               [class.day-change-animation]="dayChanged">
       <div class="day-text">Jour {{ currentDay }} - Défi Spécial</div>
@@ -32,18 +32,33 @@
       </ion-card>
 
       <!-- Carte information -->
-      <ion-card class="coaching-info-card">
+      <ion-card class="coaching-info-card" [ngClass]="defiCompleted ? 'completed' : 'not-completed'">
         <ion-card-content>
           <div class="card-content-wrapper">
             <ion-icon name="trophy-outline" class="card-icon"></ion-icon>
-            <h3 class="card-title">Votre défi du jour</h3>
+            <h3 class="card-title">
+              Votre défi du jour
+              <ion-badge 
+                [color]="defiCompleted ? 'success' : 'warning'" 
+                style="margin-left: 10px;">
+                {{ defiCompleted ? 'Terminé' : 'À faire' }}
+              </ion-badge>
+            </h3>
             <div class="card-text">
               <p>{{ specialDefi }}</p>
             </div>
-            <ion-button fill="clear" class="action-button" (click)="markAsCompleted()">
-              <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-              Marquer comme terminé
+
+            <!-- Bouton visible seulement si le défi n'est pas encore terminé -->
+            <ion-button *ngIf="!defiCompleted" expand="block" fill="solid" color="warning" class="action-button" (click)="markAsCompleted()">
+              <ion-icon slot="start" name="alert-outline"></ion-icon>
+              Faire ce défi maintenant
             </ion-button>
+
+            <!-- Icône de confirmation si déjà terminé -->
+            <div *ngIf="defiCompleted" class="defi-fini-wrapper">
+              <ion-icon name="checkmark-done-circle-outline" color="success" size="large" style="margin-top: 10px;"></ion-icon>
+              <p class="completed-text">Félicitations ! Vous avez complété ce défi.</p>
+            </div>
           </div>
         </ion-card-content>
       </ion-card>
