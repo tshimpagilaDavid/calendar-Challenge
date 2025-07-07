@@ -82,13 +82,23 @@
 </ion-col>
 </ion-row>
 </ion-grid>
-<!-- Progression du jour -->
-      <div style="margin: 16px;">  
-  <p>{{ (totalChallengesCompleted / getTotalChallenges() * 100).toFixed(0) }}% défis complétés</p>
-  <ion-progress-bar 
-    [value]="totalChallengesCompleted / getTotalChallenges()"
-    style="--progress-background: #ff69b4; --buffer-background: #f0e0ff; margin-top: 10px;">
-  </ion-progress-bar>
+<!-- Titre centré en gras -->
+<p style="    margin-left: 16px;; font-weight: bold; font-size: 1.2em;">Quelle est votre état émotionnel ?</p>
+
+<!-- Icônes animées avec labels -->
+<div style="display: flex; justify-content: center; gap: 60px; margin-top: 20px; margin-bottom: 24px;">
+  <div style="text-align: center;">
+    <video src="assets/sad.webm" autoplay loop muted width="48"></video>
+    <p>Triste</p>
+  </div>
+  <div style="text-align: center;">
+    <video src="assets/sad.webm" autoplay loop muted width="48"></video>
+    <p>Joyeux</p>
+  </div>
+  <div style="text-align: center;">
+    <video src="assets/sad.webm" autoplay loop muted width="48"></video>
+    <p>Fatigué</p>
+  </div>
 </div>
 
   <!-- Défis du jour -->
@@ -97,7 +107,7 @@
     
     <!-- Affichage conditionnel -->
     <div *ngIf="currentDayChallenges.length > 0; else noDataTemplate">
-      <ion-list style="background: transparent; margin-bottom: 25px;">
+      <ion-list style="background: transparent; margin-bottom: 15px;">
         <div *ngFor="let defis of currentDayChallenges; let i = index" 
              style="display: flex; align-items: center; margin-bottom: 15px;">
 <div class="d-inline-block rounded-circle p-3 text-white text-center shadow-sm" style="width: 50px; height: 50px; line-height: 30px;
@@ -121,6 +131,14 @@
         </div>
       </ion-list>
 
+    </div>
+    <!-- Progression du jour -->
+    <div style="margin: 16px;">  
+      <p>{{ (totalChallengesCompleted / getTotalChallenges() * 100).toFixed(0) }}% défis complétés</p>
+      <ion-progress-bar 
+        [value]="totalChallengesCompleted / getTotalChallenges()"
+        style="--progress-background: #ff69b4; --buffer-background: #f0e0ff; margin-top: 10px;">
+      </ion-progress-bar>
     </div>
 
     <!-- Template quand aucune donnée n'est disponible -->

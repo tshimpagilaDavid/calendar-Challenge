@@ -7,6 +7,13 @@
 
   <!-- Main Content -->
   <div *ngIf="!isLoading">
+    <!-- Back Button -->
+<div class="back-button-container">
+  <ion-button fill="clear" class="round-back-button" (click)="goBack()">
+    <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+  </ion-button>
+</div>
+
     <!-- Day Header -->
     <ion-item lines="none" class="day-header" [class.day-change-animation]="dayChanged">
       <div class="day-header-text">Jour {{ currentDay }} - Astuces</div>

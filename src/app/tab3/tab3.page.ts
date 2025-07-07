@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Firestore, collection, doc, getDoc, getDocs, query, where } from '@angular/fire/firestore';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Storage } from '@ionic/storage-angular';
+import { Location } from '@angular/common';
+
 
 interface DayChangedEvent extends Event {
   detail: {
@@ -32,8 +34,13 @@ export class Tab3Page implements OnInit, OnDestroy {
   constructor(
     private firestore: Firestore,
     private afAuth: Auth,
-    private storage: Storage
+    private storage: Storage,
+    private location: Location
   ) {}
+
+  goBack() {
+    this.location.back();
+  }
 
   async ngOnInit() {
     await this.initializeData();

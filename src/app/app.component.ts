@@ -6,23 +6,49 @@ import { Router } from '@angular/router';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  standalone: false,
-
+  standalone: false
 })
 export class AppComponent {
+  isOnline: boolean = true;
+
   constructor(
     private router: Router,
-    private platform: Platform,
+    private platform: Platform
   ) {
-    this.initializeApp(); // Appeler initializeApp() dans le constructeur
+    this.initializeApp();
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // Redirection vers l'écran d'introduction à chaque initialisation
-      this.router.navigateByUrl('/screen');
-      // Forcer le thème clair
-      document.body.classList.toggle('dark', false); // Désactive le mode sombre
+      document.body.classList.toggle('dark', false);
+
+      // Initial check
+      this.checkNetworkStatus();
+
+      // Listen to online/offline events
+      window.addEventListener('online', () => this.setNetworkStatus(true));
+      window.addEventListener('offline', () => this.setNetworkStatus(false));
+
+      if (navigator.onLine) {
+        this.router.navigateByUrl('/screen');
+      }
     });
+  }
+
+  setNetworkStatus(status: boolean) {
+    this.isOnline = status;
+
+    if (status) {
+      // Redirige automatiquement si l'app était offline
+      this.router.navigateByUrl('/screen');
+    }
+  }
+
+  checkNetworkStatus() {
+    this.setNetworkStatus(navigator.onLine);
+  }
+
+  manualReload() {
+    this.checkNetworkStatus();
   }
 }

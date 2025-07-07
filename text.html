@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicStore - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s;
+        }
+        .sidebar-collapsed {
+            width: 70px;
+        }
+        .sidebar-collapsed .nav-text {
+            display: none;
+        }
+        .sidebar-collapsed .logo-text {
+            display: none;
+        }
+        .main-content {
+            transition: all 0.3s;
+        }
+        .sidebar-expanded ~ .main-content {
+            margin-left: 250px;
+        }
+        .sidebar-collapsed ~ .main-content {
+            margin-left: 70px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .sidebar-collapsed ~ .main-content,
+            .sidebar-expanded ~ .main-content {
+                margin-left: 0;
+            }
+        }
+        .music-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .music-card {
+            transition: all 0.3s;
+            border-left: 4px solid #3b82f6;
+        }
+        .music-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .category-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .guitar { background-color: #93c5fd; color: #1e40af; }
+        .piano { background-color: #a5b4fc; color: #3730a3; }
+        .drums { background-color: #fca5a5; color: #9f1239; }
+        .accessories { background-color: #86efac; color: #166534; }
+        .sound { background-color: #f9a8d4; color: #831843; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="sidebar fixed h-full w-64 bg-white shadow-lg music-bg sidebar-expanded" id="sidebar">
+        <div class="p-4 flex items-center">
+            <div class="bg-blue-500 p-2 rounded-lg">
+                <i class="fas fa-music text-white text-xl"></i>
+            </div>
+            <span class="logo-text ml-3 text-xl font-bold text-blue-600">MusicStore</span>
+            <button id="toggleSidebar" class="ml-auto md:hidden">
+                <i class="fas fa-times text-gray-500"></i>
+            </button>
+        </div>
+        <nav class="mt-6">
+            <div class="px-4 py-2 flex items-center text-blue-600 bg-blue-50 rounded-r-full border-l-4 border-blue-500">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="nav-text ml-3 font-medium">Dashboard</span>
+            </div>
+            <a href="#" class="px-4 py-2 flex items-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-r-full">
+                <i class="fas fa-guitar"></i>
+                <span class="nav-text ml-3">Articles</span>
+            </a>
+            <a href="#" class="px-4 py-2 flex items-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-r-full">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="nav-text ml-3">Commandes</span>
+            </a>
+            <a href="#" class="px-4 py-2 flex items-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-r-full">
+                <i class="fas fa-users"></i>
+                <span class="nav-text ml-3">Clients</span>
+            </a>
+            <a href="#" class="px-4 py-2 flex items-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-r-full">
+                <i class="fas fa-chart-line"></i>
+                <span class="nav-text ml-3">Statistiques</span>
+            </a>
+            <a href="#" class="px-4 py-2 flex items-center text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-r-full">
+                <i class="fas fa-cog"></i>
+                <span class="nav-text ml-3">Paramètres</span>
+            </a>
+        </nav>
+        <div class="absolute bottom-0 w-full p-4">
+            <div class="bg-blue-50 p-3 rounded-lg flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-user text-blue-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-700">Admin</p>
+                    <p class="text-xs text-gray-500">Administrateur</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content min-h-screen">
+        <!-- Topbar -->
+        <header class="bg-white shadow-sm">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center">
+                    <button id="mobileToggleSidebar" class="mr-4 text-gray-500 md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="relative">
+                        <input type="text" placeholder="Rechercher..." class="pl-10 pr-4 py-2 w-64 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="text-gray-500 hover:text-blue-600">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-user text-blue-500"></i>
+                            </div>
+                            <span class="hidden md:inline text-gray-700">Admin</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Paramètres</a>
+                            <div class="border-t border-gray-200"></div>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Déconnexion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Gestion des articles</h1>
+                <button id="addProductBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Ajouter un article
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="music-card bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
+                            <i class="fas fa-guitar"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Articles</p>
+                            <p class="text-2xl font-bold">124</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="music-card bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-500 mr-4">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Commandes</p>
+                            <p class="text-2xl font-bold">56</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="music-card bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Clients</p>
+                            <p class="text-2xl font-bold">42</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="music-card bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Revenus</p>
+                            <p class="text-2xl font-bold">€12,450</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'ajout</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Guitare électrique Fender</div>
+                                            <div class="text-sm text-gray-500">#MUS123</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="category-badge guitar">Guitares</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">€899.99</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">12</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15/06/2023</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" data-id="1">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn text-red-600 hover:text-red-900" data-id="1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Piano numérique Yamaha</div>
+                                            <div class="text-sm text-gray-500">#MUS124</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="category-badge piano">Pianos</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">€1,299.99</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">5</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10/06/2023</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" data-id="2">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn text-red-600 hover:text-red-900" data-id="2">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Batterie électronique Roland</div>
+                                            <div class="text-sm text-gray-500">#MUS125</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="category-badge drums">Batteries</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">€1,599.99</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">8</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">05/06/2023</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" data-id="3">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn text-red-600 hover:text-red-900" data-id="3">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Casque audio professionnel</div>
+                                            <div class="text-sm text-gray-500">#MUS126</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="category-badge accessories">Accessoires</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">€149.99</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">0</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">01/06/2023</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" data-id="4">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn text-red-600 hover:text-red-900" data-id="4">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Enceinte Bluetooth JBL</div>
+                                            <div class="text-sm text-gray-500">#MUS127</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="category-badge sound">Sonorisation</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">€199.99</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">15</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">28/05/2023</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button class="edit-btn text-blue-600 hover:text-blue-900 mr-3" data-id="5">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn text-red-600 hover:text-red-900" data-id="5">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Précédent</a>
+                        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Suivant</a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Affichage de <span class="font-medium">1</span> à <span class="font-medium">5</span> sur <span class="font-medium">12</span> résultats
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Précédent</span>
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">1</a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">2</a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">3</a>
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Suivant</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200 py-4">
+            <div class="px-6">
+                <p class="text-center text-sm text-gray-500">&copy; 2023 MusicStore. Tous droits réservés.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="fixed inset-0 overflow-y-auto z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                <span id="modalAction">Ajouter</span> un article
+                            </h3>
+                            <div class="mt-5">
+                                <form id="productForm">
+                                    <input type="hidden" id="productId">
+                                    <div class="mb-4">
+                                        <label for="productName" class="block text-sm font-medium text-gray-700">Nom</label>
+                                        <input type="text" id="productName" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="productDescription" class="block text-sm font-medium text-gray-700">Description</label>
+                                        <textarea id="productDescription" rows="3" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label for="productPrice" class="block text-sm font-medium text-gray-700">Prix (€)</label>
+                                            <input type="number" step="0.01" id="productPrice" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        </div>
+                                        <div>
+                                            <label for="productStock" class="block text-sm font-medium text-gray-700">Stock</label>
+                                            <input type="number" id="productStock" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="productCategory" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                                        <select id="productCategory" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                            <option value="guitar">Guitares</option>
+                                            <option value="piano">Pianos</option>
+                                            <option value="drums">Batteries</option>
+                                            <option value="accessories">Accessoires</option>
+                                            <option value="sound">Sonorisation</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="productImage" class="block text-sm font-medium text-gray-700">Image</label>
+                                        <div class="mt-1 flex items-center">
+                                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                                <img id="productImagePreview" src="https://via.placeholder.com/48" alt="" class="h-full w-full">
+                                            </span>
+                                            <input type="file" id="productImage" class="ml-5 py-2 px-3 border border-gray-300 rounded-md text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hidden">
+                                            <label for="productImage" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                                                Changer
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="saveProductBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Enregistrer
+                    </button>
+                    <button type="button" id="cancelProductBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 overflow-y-auto z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-exclamation text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Confirmer la suppression</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="confirmDeleteBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Supprimer
+                    </button>
+                    <button type="button" id="cancelDeleteBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 hidden">
+        <div class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Opération réussie</span>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
+        });
+
+        // Mobile toggle sidebar
+        document.getElementById('mobileToggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // User menu dropdown
+        document.getElementById('userMenuButton').addEventListener('click', function() {
+            document.getElementById('userMenu').classList.toggle('hidden');
+        });
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#userMenuButton') && !event.target.closest('#userMenu')) {
+                document.getElementById('userMenu').classList.add('hidden');
+            }
+        });
+
+        // Product modal
+        const productModal = document.getElementById('productModal');
+        const addProductBtn = document.getElementById('addProductBtn');
+        const cancelProductBtn = document.getElementById('cancelProductBtn');
+        const saveProductBtn = document.getElementById('saveProductBtn');
+        const productForm = document.getElementById('productForm');
+        const modalAction = document.getElementById('modalAction');
+
+        // Delete modal
+        const deleteModal = document.getElementById('deleteModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+
+        // Toast
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Sample data for editing
+        const sampleProducts = [
+            {
+                id: 1,
+                name: "Guitare électrique Fender",
+                description: "Guitare électrique de qualité professionnelle avec micros humbucker.",
+                price: 899.99,
+                stock: 12,
+                category: "guitar",
+                image: "https://via.placeholder.com/48"
+            },
+            {
+                id: 2,
+                name: "Piano numérique Yamaha",
+                description: "Piano numérique avec toucher lourd et son réaliste.",
+                price: 1299.99,
+                stock: 5,
+                category: "piano",
+                image: "https://via.placeholder.com/48"
+            },
+            {
+                id: 3,
+                name: "Batterie électronique Roland",
+                description: "Batterie électronique avec pads sensibles et sons réalistes.",
+                price: 1599.99,
+                stock: 8,
+                category: "drums",
+                image: "https://via.placeholder.com/48"
+            },
+            {
+                id: 4,
+                name: "Casque audio professionnel",
+                description: "Casque audio fermé pour le monitoring en studio.",
+                price: 149.99,
+                stock: 0,
+                category: "accessories",
+                image: "https://via.placeholder.com/48"
+            },
+            {
+                id: 5,
+                name: "Enceinte Bluetooth JBL",
+                description: "Enceinte portable avec Bluetooth et batterie longue durée.",
+                price: 199.99,
+                stock: 15,
+                category: "sound",
+                image: "https://via.placeholder.com/48"
+            }
+        ];
+
+        // Add product button
+        addProductBtn.addEventListener('click', function() {
+            modalAction.textContent = 'Ajouter';
+            document.getElementById('productId').value = '';
+            productForm.reset();
+            document.getElementById('productImagePreview').src = 'https://via.placeholder.com/48';
+            productModal.classList.remove('hidden');
+        });
+
+        // Edit product buttons
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = parseInt(this.getAttribute('data-id'));
+                const product = sampleProducts.find(p => p.id === productId);
+                
+                if (product) {
+                    modalAction.textContent = 'Modifier';
+                    document.getElementById('productId').value = product.id;
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productDescription').value = product.description;
+                    document.getElementById('productPrice').value = product.price;
+                    document.getElementById('productStock').value = product.stock;
+                    document.getElementById('productCategory').value = product.category;
+                    document.getElementById('productImagePreview').src = product.image;
+                    
+                    productModal.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Delete product buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-id');
+                confirmDeleteBtn.setAttribute('data-id', productId);
+                deleteModal.classList.remove('hidden');
+            });
+        });
+
+        // Cancel product modal
+        cancelProductBtn.addEventListener('click', function() {
+            productModal.classList.add('hidden');
+        });
+
+        // Save product
+        saveProductBtn.addEventListener('click', function() {
+            // Here you would normally save to a database
+            // For demo purposes, we'll just show a toast
+            productModal.classList.add('hidden');
+            
+            toastMessage.textContent = modalAction.textContent === 'Ajouter' ? 
+                'Article ajouté avec succès' : 'Article modifié avec succès';
+            showToast();
+        });
+
+        // Confirm delete
+        confirmDeleteBtn.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            // Here you would normally delete from a database
+            // For demo purposes, we'll just show a toast
+            deleteModal.classList.add('hidden');
+            
+            toastMessage.textContent = 'Article supprimé avec succès';
+            showToast();
+        });
+
+        // Cancel delete
+        cancelDeleteBtn.addEventListener('click', function() {
+            deleteModal.classList.add('hidden');
+        });
+
+        // Image preview
+        document.getElementById('productImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('productImagePreview').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Show toast notification
+        function showToast() {
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === productModal) {
+                productModal.classList.add('hidden');
+            }
+            if (event.target === deleteModal) {
+                deleteModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

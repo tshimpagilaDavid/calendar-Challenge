@@ -1,55 +1,51 @@
-<ion-header>
-  <ion-toolbar class="transparent-toolbar">
-    <ion-label class="centered-label" style="color: #ff69b4;">
-      Profil utilisateur
-    </ion-label>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true" class="ion-padding">
-  <!-- Afficher un spinner pendant le chargement -->
-  <!-- Conteneur pour centrer le spinner -->
+
+  <!-- Spinner de chargement -->
   <div class="spinner-container" *ngIf="isLoading">
-    <ion-spinner name="crescent" style="color:#ff69b4;"></ion-spinner>
+    <ion-spinner name="crescent"></ion-spinner>
     <p class="loading-text">Chargement en cours...</p>
   </div>
 
-
-  <!-- Afficher les données une fois chargées -->
+  <!-- Contenu principal affiché une fois chargé -->
   <ng-container *ngIf="!isLoading && employee">
-    <!-- Carré rose avec la photo de profil -->
-    <div class="profile-container">
-      <!-- Photo de profil -->
-      <div class="profile-picture">
-        <img [src]="employee.photoUrl || 'assets/default-profile.png'" alt="Photo de profil" />
-      </div>
-    
-      <!-- Labels alignés en colonne -->
-      <div class="labels-container">
-        <h2 style="font-weight: 600;color: white; font-size: xx-large;" class="ion-text-center">{{ employee.nom }}</h2>
-        <ion-label style="font-size: 16px;color: black;" class="ion-text-center">{{ employee.role }}</ion-label>
+
+    <!-- Fond rose arrondi -->
+    <div class="custom-background">
+      <h2 class="header-title">Profil utilisateur</h2>
+    </div>
+
+    <!-- Image de profil en cercle -->
+    <div class="profile-img-container">
+      <img [src]="employee.photoUrl || 'assets/default-profile.png'" alt="Photo de profil" class="profile-img" />
+    </div>
+
+    <!-- Nom et poste -->
+    <div class="text-center mt-4">
+      <h1 class="employee-name">{{ employee.nom }}</h1>
+      <p class="employee-role">{{ employee.role }}</p>
+    </div>
+
+    <!-- Carte d'informations Bootstrap -->
+    <div class="container mt-4">
+      <div class="card shadow info-card-bootstrap">
+        <div class="card-body">
+          <h5 class="card-title" style="color: #ff69b4;">Email</h5>
+          <p class="card-text">
+            <i class="bi bi-envelope-fill me-2"></i>{{ employee.email }}
+          </p>
+
+          <h5 class="card-title mt-3" style="color: #ff69b4;">Entreprise</h5>
+          <p class="card-text">
+            <i class="bi bi-building me-2"></i>{{ employee.entreprise }}
+          </p>
+
+          <h5 class="card-title mt-3" style="color: #ff69b4;">Numéro de téléphone</h5>
+          <p class="card-text">
+            <i class="bi bi-telephone-fill me-2"></i>{{ employee.phone }}
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- Carte grise avec les informations de l'employé -->
-    <ion-card class="info-card">
-      <ion-card-content>
-        <h2 style="font-weight: 600;color: #ff69b4;">Email</h2>
-        <ion-item class="trans" lines="none">
-          <ion-icon name="mail-outline" slot="start"></ion-icon>
-          <ion-label class="ion-text-center">{{ employee.email }}</ion-label>
-        </ion-item>
-        <h2 style="font-weight: 600;color: #ff69b4;">Entreprise</h2>
-        <ion-item class="trans" lines="none">
-          <ion-icon name="business-outline"></ion-icon>
-          <ion-label class="ion-text-center">{{ employee.entreprise }}</ion-label>
-        </ion-item>
-        <h2 style="font-weight: 600;color: #ff69b4;">Numéro de téléphone</h2>
-        <ion-item class="trans" lines="none">
-          <ion-icon name="call-outline" slot="start"></ion-icon>
-          <ion-label class="ion-text-center">{{ employee.phone }}</ion-label>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
   </ng-container>
 </ion-content>

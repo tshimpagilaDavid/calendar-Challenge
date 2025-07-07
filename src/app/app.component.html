@@ -1,3 +1,18 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+
+  <!-- Page bloquante si pas de connexion -->
+  <div *ngIf="!isOnline" class="offline-blocker">
+    <ion-icon name="wifi-outline" class="wifi-icon"></ion-icon>
+    <h2>Aucune connexion Internet</h2>
+    <p>Vérifiez votre Wi-Fi ou vos données mobiles</p>
+    <ion-button color="danger" (click)="manualReload()">
+      Recharger
+    </ion-button>
+  </div>
+
+  <!-- Application normale si connecté -->
+  <div *ngIf="isOnline">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+
 </ion-app>
