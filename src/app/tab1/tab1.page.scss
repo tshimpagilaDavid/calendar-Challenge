@@ -18,15 +18,37 @@
 
 .icon-container {
   text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+// Fond dynamique en fonction de la couleur d’émotion
+.icon-container.selected i,
+.icon-container.selected p {
+  color: white !important;
 }
 
 .icon-container.selected {
-  background-color: #f0f0f0;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-  transform: scale(1.1);
+  transform: scale(1.05);
+}
+
+// Couleurs de fond à appliquer dynamiquement depuis TS
+.selected.text-primary {
+  background-color: #007bff;
+}
+
+.selected.text-success {
+  background-color: #28a745;
+}
+
+.selected.text-warning {
+  background-color: #ffc107;
+}
+
+.selected.text-danger {
+  background-color: #dc3545;
 }
 
 

@@ -115,9 +115,10 @@
 <div class="emotions-container">
   <div 
     *ngFor="let emotion of emotions" 
-    class="icon-container" 
-    [class.selected]="selectedEmotion === emotion.name"
-    (click)="selectEmotion(emotion.name)">
+  class="icon-container" 
+  [class.selected]="selectedEmotion === emotion.name"
+  [class]="selectedEmotion === emotion.name ? 'icon-container selected ' + emotion.bg : 'icon-container'"
+  (click)="selectEmotion(emotion.name)">
     
     <i [class]="emotion.icon + ' icon-animate ' + emotion.color"></i>
     <p>{{ emotion.label }}</p>

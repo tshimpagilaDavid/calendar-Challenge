@@ -17,11 +17,13 @@ import { ToastController } from '@ionic/angular';
 })
 export class Tab1Page implements OnInit, OnDestroy {
   emotions = [
-  { name: 'triste', label: 'Triste', icon: 'bi bi-emoji-frown', color: 'text-primary' },
-  { name: 'joyeux', label: 'Joyeux', icon: 'bi bi-emoji-smile', color: 'text-success' },
-  { name: 'fatigue', label: 'Fatigué', icon: 'bi bi-emoji-dizzy', color: 'text-warning' },
-  { name: 'fache', label: 'Fâché', icon: 'bi bi-emoji-angry', color: 'text-danger' }
+  { name: 'triste', label: 'Triste', icon: 'bi bi-emoji-frown', color: 'text-primary', bg: 'bg-primary' },
+  { name: 'joyeux', label: 'Joyeux', icon: 'bi bi-emoji-smile', color: 'text-success', bg: 'bg-success' },
+  { name: 'fatigue', label: 'Fatigué', icon: 'bi bi-emoji-dizzy', color: 'text-warning', bg: 'bg-warning' },
+  { name: 'fache', label: 'Fâché', icon: 'bi bi-emoji-angry', color: 'text-danger', bg: 'bg-danger' }
 ];
+
+
 
 selectedEmotion: string | null = null;
 
