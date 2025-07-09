@@ -8,6 +8,28 @@
   color: var(--text-color); /* Utilise une variable pour la couleur du texte */
 }
 
+.emotions-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+.icon-container {
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.icon-container.selected {
+  background-color: #f0f0f0;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+
 .transparent-toolbar {
   --background: transparent;
   --ion-background-color: transparent;

@@ -16,6 +16,15 @@ import { ToastController } from '@ionic/angular';
   standalone: false
 })
 export class Tab1Page implements OnInit, OnDestroy {
+  emotions = [
+  { name: 'triste', label: 'Triste', icon: 'bi bi-emoji-frown', color: 'text-primary' },
+  { name: 'joyeux', label: 'Joyeux', icon: 'bi bi-emoji-smile', color: 'text-success' },
+  { name: 'fatigue', label: 'Fatigué', icon: 'bi bi-emoji-dizzy', color: 'text-warning' },
+  { name: 'fache', label: 'Fâché', icon: 'bi bi-emoji-angry', color: 'text-danger' }
+];
+
+selectedEmotion: string | null = null;
+
   // Variables d'état
   connected: boolean = false;
   employe: any = null;
@@ -203,6 +212,8 @@ async updateProgressStats() {
   
     // Mettre à jour les statistiques locales si nécessaire
     await this.updateProgressStats();
+    await this.loadEmotionForCurrentDay();
+
   }
   
 
@@ -407,4 +418,54 @@ async updateProgressStats() {
   goToProfilePage() {
     this.router.navigate(['/tabs/profil']);
   }
+ async selectEmotion(emotionName: string) {
+  this.selectedEmotion = emotionName;
+
+  const user = await this.afAuth.currentUser;
+  const entrepriseId = 'SING';
+  const formationId = this.formation?.id;
+
+  if (!user?.uid || !formationId) return;
+
+  const formationDocRef = doc(
+    this.firestore,
+    `entreprises/${entrepriseId}/employes/${user.uid}/formations/${formationId}`
+  );
+
+  try {
+    // Cloner et modifier localement le tableau defis
+    const updatedDefis = [...this.formation.defis];
+    if (!updatedDefis[this.currentDay - 1]) return;
+
+    updatedDefis[this.currentDay - 1] = {
+      ...updatedDefis[this.currentDay - 1],
+      emotion: emotionName
+    };
+
+    // Mettre à jour Firestore
+    await setDoc(formationDocRef, {
+      defis: updatedDefis
+    }, { merge: true });
+
+    // Mettre à jour localement aussi
+    this.formation.defis = updatedDefis;
+
+    this.showToast(`Émotion "${emotionName}" enregistrée pour le jour ${this.currentDay}`);
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de l’émotion dans les défis :', error);
+  }
+}
+
+private async loadEmotionForCurrentDay() {
+  const dayData = this.formation?.defis?.[this.currentDay - 1];
+  if (dayData?.emotion) {
+    this.selectedEmotion = dayData.emotion;
+  } else {
+    this.selectedEmotion = null;
+  }
+}
+
+
+
+
 }

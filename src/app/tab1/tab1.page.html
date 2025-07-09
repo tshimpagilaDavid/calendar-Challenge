@@ -14,6 +14,32 @@
   </ion-toolbar>
 </ion-header>
 
+<style>
+  .icon-animate {
+    font-size: 48px;
+    display: inline-block;
+    animation: float 2s ease-in-out infinite;
+  }
+
+  .icon-container:hover .icon-animate {
+    animation-play-state: paused; /* stop animation on hover si tu veux */
+    transform: translateY(-10px); /* ou un autre effet */
+    transition: transform 0.3s ease;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+</style>
+
 <div class="spinner-container" *ngIf="isLoading">
     <ion-spinner name="crescent" style="color:#ff69b4;"></ion-spinner>
     <p class="loading-text">Chargement en cours...</p>
@@ -86,20 +112,18 @@
 <p style="    margin-left: 16px;; font-weight: bold; font-size: 1.2em;">Quelle est votre état émotionnel ?</p>
 
 <!-- Icônes animées avec labels -->
-<div style="display: flex; justify-content: center; gap: 60px; margin-top: 20px; margin-bottom: 24px;">
-  <div style="text-align: center;">
-    <video src="assets/sad.webm" autoplay loop muted width="48"></video>
-    <p>Triste</p>
-  </div>
-  <div style="text-align: center;">
-    <video src="assets/sad.webm" autoplay loop muted width="48"></video>
-    <p>Joyeux</p>
-  </div>
-  <div style="text-align: center;">
-    <video src="assets/sad.webm" autoplay loop muted width="48"></video>
-    <p>Fatigué</p>
+<div class="emotions-container">
+  <div 
+    *ngFor="let emotion of emotions" 
+    class="icon-container" 
+    [class.selected]="selectedEmotion === emotion.name"
+    (click)="selectEmotion(emotion.name)">
+    
+    <i [class]="emotion.icon + ' icon-animate ' + emotion.color"></i>
+    <p>{{ emotion.label }}</p>
   </div>
 </div>
+
 
   <!-- Défis du jour -->
   <div style="margin-top: 16px;">
