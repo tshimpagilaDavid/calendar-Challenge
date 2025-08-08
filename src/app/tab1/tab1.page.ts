@@ -4,9 +4,10 @@ import { Auth, onAuthStateChanged, User, signOut } from '@angular/fire/auth';
 import { AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Firestore, doc, collection, getDocs, getDoc, query, where } from '@angular/fire/firestore';
-import { setDoc } from 'firebase/firestore';
+import { DocumentData, DocumentReference, setDoc } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
 import { ToastController } from '@ionic/angular';
+
 
 
 @Component({
@@ -39,6 +40,7 @@ selectedEmotion: string | null = null;
   private dataTimeout: any = null;
   totalChallengesCompleted: number = 0;
   dailyProgress: { day: number, completed: number, total: number }[] = [];
+  entreprise: any;
 
   constructor(
     private router: Router,
@@ -151,36 +153,98 @@ async updateProgressStats() {
 
 
   // Sauvegarde les défis et les statistiques dans Firestore
-  async saveChallenges() {
-    try {
-      const user = await this.afAuth.currentUser;
-      const entrepriseId = 'SING'; // À remplacer par une valeur dynamique
-      const formationId = 'confiance-en-soi'; // À remplacer par une valeur dynamique
-  
-      if (user?.uid && entrepriseId && formationId) {
-        const formationDocRef = doc(
-          this.firestore,
-          `entreprises/${entrepriseId}/employes/${user.uid}/formations/${formationId}`
-        );
-  
-        const updatedData = {
-          progress: {
-            daily: this.dailyProgress,
-            totalCompleted: this.totalChallengesCompleted,
-            lastUpdated: new Date().toISOString()
-          }
-        };
-  
-        await setDoc(formationDocRef, updatedData, { merge: true });
-        console.log('Progression sauvegardée avec succès:', updatedData);
-      } else {
-        console.error('Utilisateur ou formation non trouvée.');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde dans Firestore:', error);
-      throw error; // Pour diagnostiquer les erreurs
+// Sauvegarde les défis et les statistiques dans Firestore
+async saveChallenges() {
+  try {
+    const user = await this.afAuth.currentUser;
+
+    const entrepriseId = this.employe?.entrepriseId;
+    const formationId = this.formation?.id;
+
+    // 🔍 Debug complet
+    console.log("🔍 DEBUG avant sauvegarde:", {
+      userUid: user?.uid,
+      entrepriseId,
+      formationId,
+      dailyProgress: this.dailyProgress,
+      totalCompleted: this.totalChallengesCompleted
+    });
+
+    // Vérification stricte
+    if (!user?.uid || !entrepriseId || !formationId) {
+      console.error("❌ Impossible de sauvegarder : donnée manquante", {
+        userUid: user?.uid,
+        entrepriseId,
+        formationId
+      });
+      return; // On sort sans planter
     }
+
+    // Référence vers le document
+    const formationDocRef = doc(
+      this.firestore,
+      `entreprises/${entrepriseId}/employes/${user.uid}/formations/${formationId}`
+    );
+
+    console.log("📄 Chemin du doc à sauvegarder:", formationDocRef.path);
+
+    // Données à mettre à jour
+    const updatedData = {
+      progress: {
+        daily: this.dailyProgress,
+        totalCompleted: this.totalChallengesCompleted,
+        lastUpdated: new Date().toISOString()
+      }
+    };
+
+    // Utiliser setDoc avec merge pour créer le doc s'il n'existe pas
+    await setDoc(formationDocRef, updatedData, { merge: true });
+
+    console.log("✅ Progression mise à jour avec succès:", updatedData);
+  } catch (error) {
+    console.error("🔥 Erreur lors de la mise à jour dans Firestore:", error);
   }
+}
+
+
+async selectEmotion(emotionName: string) {
+  this.selectedEmotion = emotionName;
+
+  const user = await this.afAuth.currentUser;
+  const entrepriseId = this.employe?.entrepriseId; // ✅ Corrigé
+  const formationId = this.formation?.id;
+
+  if (!user?.uid || !formationId || !entrepriseId) return;
+
+  const formationDocRef = doc(
+    this.firestore,
+    `entreprises/${entrepriseId}/employes/${user.uid}/formations/${formationId}`
+  );
+
+  try {
+    // Cloner et modifier localement le tableau defis
+    const updatedDefis = [...this.formation.defis];
+    if (!updatedDefis[this.currentDay - 1]) return;
+
+    updatedDefis[this.currentDay - 1] = {
+      ...updatedDefis[this.currentDay - 1],
+      emotion: emotionName
+    };
+
+    // Mettre à jour Firestore
+    await setDoc(formationDocRef, { defis: updatedDefis }, { merge: true });
+
+    // Mettre à jour localement aussi
+    this.formation.defis = updatedDefis;
+
+    this.showToast(`Émotion "${emotionName}" enregistrée pour le jour ${this.currentDay}`);
+
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de l’émotion dans les défis :', error);
+  }
+}
+
+
 
   // Calcule le nombre total de défis de la formation
   getTotalChallenges(): number {
@@ -217,6 +281,37 @@ async updateProgressStats() {
     await this.loadEmotionForCurrentDay();
 
   }
+
+  private async loadUserData(userId: string) {
+  try {
+    this.isLoading = true;
+    this.hasData = false;
+    
+    const entreprisesSnapshot = await getDocs(collection(this.firestore, 'entreprises'));
+    let dataFound = false;
+    
+    for (const entrepriseDoc of entreprisesSnapshot.docs) {
+      const employeRef = doc(this.firestore, `entreprises/${entrepriseDoc.id}/employes/${userId}`);
+      const employeSnap = await getDoc(employeRef);
+      
+      if (employeSnap.exists()) {
+        // 🔹 On ajoute aussi l'ID de l'entreprise à l'objet employé
+        this.employe = { ...employeSnap.data(), entrepriseId: entrepriseDoc.id };
+        console.log("👤 Employé chargé:", this.employe);
+
+        await this.loadCurrentFormation(employeRef);
+        dataFound = true;
+        break;
+      }
+    }
+    
+    this.handleDataLoadComplete(dataFound);
+  } catch (error) {
+    console.error("Data loading error:", error);
+    this.handleDataLoadComplete(false);
+  }
+}
+
   
 
   private async initializeApp() {
@@ -269,32 +364,7 @@ async updateProgressStats() {
     }
   }
 
-  private async loadUserData(userId: string) {
-    try {
-      this.isLoading = true;
-      this.hasData = false;
-      
-      const entreprisesSnapshot = await getDocs(collection(this.firestore, 'entreprises'));
-      let dataFound = false;
-      
-      for (const entrepriseDoc of entreprisesSnapshot.docs) {
-        const employeRef = doc(this.firestore, `entreprises/${entrepriseDoc.id}/employes/${userId}`);
-        const employeSnap = await getDoc(employeRef);
-        
-        if (employeSnap.exists()) {
-          this.employe = employeSnap.data();
-          await this.loadCurrentFormation(employeRef);
-          dataFound = true;
-          break;
-        }
-      }
-      
-      this.handleDataLoadComplete(dataFound);
-    } catch (error) {
-      console.error("Data loading error:", error);
-      this.handleDataLoadComplete(false);
-    }
-  }
+  
 
   private async loadCurrentFormation(employeRef: any) {
     try {
@@ -420,43 +490,7 @@ async updateProgressStats() {
   goToProfilePage() {
     this.router.navigate(['/tabs/profil']);
   }
- async selectEmotion(emotionName: string) {
-  this.selectedEmotion = emotionName;
-
-  const user = await this.afAuth.currentUser;
-  const entrepriseId = 'SING';
-  const formationId = this.formation?.id;
-
-  if (!user?.uid || !formationId) return;
-
-  const formationDocRef = doc(
-    this.firestore,
-    `entreprises/${entrepriseId}/employes/${user.uid}/formations/${formationId}`
-  );
-
-  try {
-    // Cloner et modifier localement le tableau defis
-    const updatedDefis = [...this.formation.defis];
-    if (!updatedDefis[this.currentDay - 1]) return;
-
-    updatedDefis[this.currentDay - 1] = {
-      ...updatedDefis[this.currentDay - 1],
-      emotion: emotionName
-    };
-
-    // Mettre à jour Firestore
-    await setDoc(formationDocRef, {
-      defis: updatedDefis
-    }, { merge: true });
-
-    // Mettre à jour localement aussi
-    this.formation.defis = updatedDefis;
-
-    this.showToast(`Émotion "${emotionName}" enregistrée pour le jour ${this.currentDay}`);
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour de l’émotion dans les défis :', error);
-  }
-}
+ 
 
 private async loadEmotionForCurrentDay() {
   const dayData = this.formation?.defis?.[this.currentDay - 1];
@@ -467,7 +501,8 @@ private async loadEmotionForCurrentDay() {
   }
 }
 
-
-
-
 }
+function updateDoc(formationDocRef: DocumentReference<DocumentData, DocumentData>, updatedData: { progress: { daily: { day: number; completed: number; total: number; }[]; totalCompleted: number; lastUpdated: string; }; }) {
+  throw new Error('Function not implemented.');
+}
+
